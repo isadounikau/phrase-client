@@ -1,0 +1,36 @@
+[
+  {
+    "id": "0dcf034088258abe79837e6100eab4a1",
+    "name": "project-1-name",
+    "slug": "project-1-slug",
+    "main_format": "strings",
+    "project_image_url": null,
+    "created_at": "2013-08-15T10:45:19Z",
+    "updated_at": "2020-04-03T12:42:06Z",
+    "account": {
+      "id": "93614t48",
+      "name": "test",
+      "slug": "test",
+      "company": "Ihar Sadounikau",
+      "created_at": "2013-08-15T10:31:31Z",
+      "updated_at": "2020-04-03T17:43:06Z"
+    }
+  },
+  {
+    "id": "911c3e878eb2df212aebe5ec09777fbb",
+    "name": "project-2-name",
+    "slug": "project-2-slug",
+    "main_format": "strings",
+    "project_image_url": null,
+    "created_at": "2013-11-26T08:20:55Z",
+    "updated_at": "2020-04-03T13:22:10Z",
+    "account": {
+      "id": "93624b48",
+      "name": "test",
+      "slug": "test",
+      "company": "Ihar Sadounikau",
+      "created_at": "2013-08-15T10:31:31Z",
+      "updated_at": "2020-04-03T17:43:06Z"
+    }
+  }
+]
