@@ -4,12 +4,12 @@ install: "/bin/true"
 script:
   - mvn clean install -q -B
 deploy:
-- skip_cleanup: true
+- cleanup: fasle
   provider: script
   script: "./deploy"
   on:
     branch: master
-- skip_cleanup: true
+- cleanup: fasle
   provider: script
   script: "./deploy"
   on:
