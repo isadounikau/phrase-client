@@ -1,6 +1,5 @@
+dist: trusty
 language: java
-jdk:
-  - openjdk10
 install: "/bin/true"
 script:
   - mvn clean install -q -B
