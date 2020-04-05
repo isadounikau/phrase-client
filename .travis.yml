@@ -17,6 +17,7 @@ deploy:
 before_install:
 - openssl aes-256-cbc -K $encrypted_4f0d00631887_key -iv $encrypted_4f0d00631887_iv
   -in .travis/gpg.asc.enc -out .travis/gpg.asc -d
+- cd .travis && ls && cd ..
 env:
   global:
   - secure: aAKCu+NoZ/w1Tyhq8icIkOhrExWsyAXe33f14XahXDAPYczC1+0bFflXANPOslZWh6VZh6vd4k4pL2WjKxNxS4oYJmMtJZiXZFStPuiTj3a/iJON8DMPHmJVO+kz5xRMHsZzuP/1FZIIpn5KJ5xzcf0kriTwE/zwpjzN6YhhnF/j82t4r1+YzUJfWM/lY26KixPJssqDvGHfGrOs79F+jnXP8mG+Yq7LRvRGYHn9QlR/2TxmqphzUxDaWnMw9C7ITtUPwKbnzsvh1a5CHK/+IJQ3rGuM+XLVdSZKRpprQ8tfJe9hLXBpearVo2CaIoNlRtKT7UqdCweoDvHCf9MP5fLnCpMwg7ctAvh0wAiqxMxJCiL2hs6XPQkLNeNHV04bH5bJDIBjX02kASlILDXXOJfgpy8LUA9tS0EqYIoYZ/ItSUFJqZrV5t2LyEfjpSmkmVy0lmKA5ewZyGHXmv234l9tWxgp4broyQGZLWInx+FIZrwJm/RBKmsCdgtajFw9pYCYqiDmou8pxuwPe7Xi7zUrWbszCo5NT1PgcIQI1D5eNe3Ptoj6581QvXtHMd+0hiiQc6z/uakQHJCDMLrCkeJ4Dgp83MC34o9PHg1SPnN9VOUk+6dq/OnNfblOMNu8S6WSdiH6OClQFRZCRYp5H8xOVzWz5SFsECCrlvpJ1ec=
