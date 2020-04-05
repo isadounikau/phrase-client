@@ -3,7 +3,7 @@ jdk:
   - openjdk10
 install: "/bin/true"
 script:
-  - "./test"
+  - mvn clean install -q -B
 deploy:
 - skip_cleanup: true
   provider: script
