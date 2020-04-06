@@ -1,5 +1,13 @@
 package com.isadounikau.phrase.api.client
 
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
+import com.google.common.net.HttpHeaders
+import com.google.common.net.MediaType
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonIOException
+import com.google.gson.JsonSyntaxException
 import com.isadounikau.phrase.api.client.model.CreateKey
 import com.isadounikau.phrase.api.client.model.CreatePhraseLocale
 import com.isadounikau.phrase.api.client.model.CreatePhraseProject
@@ -15,14 +23,6 @@ import com.isadounikau.phrase.api.client.model.PhraseProjects
 import com.isadounikau.phrase.api.client.model.Translation
 import com.isadounikau.phrase.api.client.model.Translations
 import com.isadounikau.phrase.api.client.model.UpdatePhraseProject
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
-import com.google.common.net.HttpHeaders
-import com.google.common.net.MediaType
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonIOException
-import com.google.gson.JsonSyntaxException
 import feign.Feign
 import feign.RequestInterceptor
 import feign.Response
@@ -32,15 +32,16 @@ import feign.gson.GsonEncoder
 import org.apache.commons.httpclient.HttpStatus
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 import java.io.File
 import java.util.Timer
+import java.util.TimerTask
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.scheduleAtFixedRate
 
 @Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
 class PhraseApiClientImpl : PhraseApiClient {
 
-    private var log = LoggerFactory.getLogger(PhraseApiClientImpl::class.java.name)
+    private val log = LoggerFactory.getLogger(PhraseApiClientImpl::class.java.name)
 
     private val client: PhraseApi
     private val config: PhraseApiClientConfig
@@ -49,36 +50,32 @@ class PhraseApiClientImpl : PhraseApiClient {
     // Response
     private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
 
-    constructor(client: PhraseApi) {
-        config = PhraseApiClientConfig(authKey = "")
-        this.client = client
-        responseCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(config.responseCacheExpireAfterWriteMilliseconds, TimeUnit.MILLISECONDS)
-            .build<String, Any>()
-        runCleaningTimer()
-    }
-
     constructor(config: PhraseApiClientConfig) {
         this.config = config
         client = PhraseApiImpl(config)
         responseCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(config.responseCacheExpireAfterWriteMilliseconds, TimeUnit.MILLISECONDS)
+            .expireAfterWrite(config.responseCacheExpireAfterWrite)
             .build<String, Any>()
         runCleaningTimer()
     }
 
     constructor(url: String, authKey: String) : this(PhraseApiClientConfig(url, authKey))
 
+    constructor(authKey: String) : this(PhraseApiClientConfig(authKey))
+
     private fun runCleaningTimer() {
-        Timer("responseCache", true).scheduleAtFixedRate(config.cleanUpFareRateMilliseconds, config.cleanUpFareRateMilliseconds) {
-            try {
-                log.debug("CleanUp of responses cache started")
-                responseCache.cleanUp()
-                log.debug("CleanUp of responses cache finished")
-            } catch (ex: Exception) {
-                log.debug("Error during responses cleanup", ex)
+        Timer("responseCache", true).scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                try {
+                    log.debug("CleanUp of responses cache started")
+                    responseCache.cleanUp()
+                    log.info("CleanUp of responses cache finished")
+                } catch (ex: Exception) {
+                    log.warn("Error during responses cleanup", ex)
+                }
             }
-        }
+
+        }, config.cleanUpFareRate.toMillis(), config.cleanUpFareRate.toMillis())
     }
 
     override fun projects(): PhraseProjects? {
@@ -362,20 +359,22 @@ class PhraseApiClientImpl : PhraseApiClient {
                 .encoder(FormEncoder(GsonEncoder()))
                 .target(PhraseApi::class.java, config.url)
 
-            Timer("eTagCache", true).scheduleAtFixedRate(config.cleanUpFareRateMilliseconds, config.cleanUpFareRateMilliseconds) {
-                try {
-                    log.debug("CleanUp of eTags cache started")
-                    eTagCache.cleanUp()
-                    log.debug("CleanUp of eTags cache finished")
-                } catch (ex: Exception) {
-                    log.debug("Error during eTags cleanup", ex)
+            Timer("eTagCache", true).scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    try {
+                        log.debug("CleanUp of eTags cache started")
+                        eTagCache.cleanUp()
+                        log.debug("CleanUp of eTags cache finished")
+                    } catch (ex: Exception) {
+                        log.warn("Error during eTags cleanup", ex)
+                    }
                 }
-            }
+            }, config.cleanUpFareRate.toMillis(), config.cleanUpFareRate.toMillis())
         }
 
         private fun getInterceptor() = RequestInterceptor {
             apply {
-                it.header(HttpHeaders.IF_NONE_MATCH, getETag(it.request().method() + it.request().url()))
+                it.header(HttpHeaders.IF_NONE_MATCH, getETag(it.request().httpMethod().name + it.request().url()))
                 it.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
             }
         }
