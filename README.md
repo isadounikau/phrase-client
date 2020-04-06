@@ -13,7 +13,6 @@ It's supposed to expose Phrase Core within the kotlin world.
 You need configure your client 
 ```
 val config =  PhraseApiClientConfig(
-    url = "https://api.phraseapp.com",
     authKey = "authKey"
 )
 
