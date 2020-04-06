@@ -34,7 +34,7 @@
         <scm.url>https://github.com/isadounikau/phrase-client</scm.url>
         <kotlin.version>1.3.61</kotlin.version>
 
-        <feign.version>9.5.1</feign.version>
+        <feign.version>10.9</feign.version>
     </properties>
 
     <scm>
