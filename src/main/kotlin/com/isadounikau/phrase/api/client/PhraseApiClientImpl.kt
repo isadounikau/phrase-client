@@ -375,7 +375,7 @@ class PhraseApiClientImpl : PhraseApiClient {
 
         private fun getInterceptor() = RequestInterceptor {
             apply {
-                it.header(HttpHeaders.IF_NONE_MATCH, getETag(it.request().httpMethod().name + it.request().url()))
+                it.header(HttpHeaders.IF_NONE_MATCH, getETag(it.request().method() + it.request().url()))
                 it.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
             }
         }
