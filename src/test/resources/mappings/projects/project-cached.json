@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "scenarioName": "Caching check",
+      "scenarioName": "Project Caching Check",
       "newScenarioState": "Second call",
       "request": {
         "method": "GET",
@@ -17,7 +17,7 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "project.json",
+        "bodyFileName": "projects/project.json",
         "headers": {
           "content-type": "application/json",
           "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
@@ -25,7 +25,7 @@
       }
     },
     {
-      "scenarioName": "Caching check",
+      "scenarioName": "Project Caching Check",
       "requiredScenarioState": "Second call",
       "request": {
         "method": "GET",

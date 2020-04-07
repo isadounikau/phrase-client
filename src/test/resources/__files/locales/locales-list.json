@@ -1,0 +1,34 @@
+[
+  {
+    "id": "9c1eb9cede7a1bb6af6fa3c2c6eb32a9",
+    "name": "ca-ES",
+    "code": "ca-ES",
+    "default": false,
+    "main": false,
+    "rtl": false,
+    "plural_forms": [
+      "zero",
+      "one",
+      "other"
+    ],
+    "created_at": "2018-07-20T09:58:37Z",
+    "updated_at": "2020-03-24T18:02:58Z",
+    "source_locale": null
+  },
+  {
+    "id": "a4ca9b45e8721d6636be3e8ba40a90b3",
+    "name": "de-DE",
+    "code": "de-DE",
+    "default": false,
+    "main": false,
+    "rtl": false,
+    "plural_forms": [
+      "zero",
+      "one",
+      "other"
+    ],
+    "created_at": "2018-07-20T09:59:20Z",
+    "updated_at": "2020-03-24T18:03:57Z",
+    "source_locale": null
+  }
+]
