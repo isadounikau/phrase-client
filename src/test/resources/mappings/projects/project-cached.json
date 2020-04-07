@@ -17,7 +17,7 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "project.json",
+        "bodyFileName": "projects/project.json",
         "headers": {
           "content-type": "application/json",
           "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
