@@ -32,7 +32,6 @@ import feign.gson.GsonEncoder
 import org.apache.commons.httpclient.HttpStatus
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask

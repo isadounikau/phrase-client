@@ -296,6 +296,15 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <sourceLinks>
+                                <link>
+                                    <path>${project.basedir}/src/main/kotlin</path>
+                                    <url>${scm.url}/tree/master/src/main/kotlin</url>
+                                    <lineSuffix>#L</lineSuffix>
+                                </link>
+                            </sourceLinks>
+                        </configuration>
                     </plugin>
 
                     <plugin>
