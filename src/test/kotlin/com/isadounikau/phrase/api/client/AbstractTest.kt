@@ -1,6 +1,7 @@
 package com.isadounikau.phrase.api.client
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import java.time.Duration
 import java.util.UUID
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -17,7 +18,8 @@ abstract class AbstractTest {
 
         val config = PhraseApiClientConfig(
             url = "http://localhost:${wireMockServer.port()}",
-            authKey = token
+            authKey = token,
+            cleanUpFareRate = Duration.ofSeconds(1)
         )
 
         source = PhraseApiClientImpl(config)
