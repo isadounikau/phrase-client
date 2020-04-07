@@ -7,7 +7,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 class PhraseApiClientImplTest {
 
@@ -44,7 +43,6 @@ class PhraseApiClientImplTest {
         assertEquals(2, projects.size)
     }
 
-
     @Test
     fun `get project when project exist then return project`() {
         //GIVEN project Id
@@ -58,10 +56,9 @@ class PhraseApiClientImplTest {
     }
 
     @Test
-    //TODO find way to test it with cache check
     fun `get project when project exist and been already requested then return project from cache`() {
         //GIVEN project Id
-        val projectId = "943e69b51641b00d6acbb638f62f4541"
+        val projectId = "cached"
 
         //WHEN
         val projectOne = source.project(projectId)
@@ -71,7 +68,6 @@ class PhraseApiClientImplTest {
         assertNotNull(projectOne)
         assertNotNull(projectTwo)
     }
-
 
     @Test(expected = PhraseAppApiException::class)
     fun `get project when project not exist `() {

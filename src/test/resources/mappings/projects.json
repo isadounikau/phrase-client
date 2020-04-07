@@ -26,10 +26,10 @@
         "method": "GET",
         "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541",
         "headers": {
-          "Content-Type": {
+          "content-type": {
             "equalTo": "application/json"
           },
-          "Authorization": {
+          "authorization": {
             "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
           }
         }
@@ -38,7 +38,8 @@
         "status": 200,
         "bodyFileName": "project.json",
         "headers": {
-          "Content-Type": "application/json"
+          "content-type": "application/json",
+          "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
         }
       }
     },

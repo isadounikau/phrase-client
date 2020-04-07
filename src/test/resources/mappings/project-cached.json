@@ -1,0 +1,50 @@
+{
+  "mappings": [
+    {
+      "scenarioName": "Caching check",
+      "newScenarioState": "Second call",
+      "request": {
+        "method": "GET",
+        "url": "/api/v2/projects/cached",
+        "headers": {
+          "content-type": {
+            "equalTo": "application/json"
+          },
+          "authorization": {
+            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "project.json",
+        "headers": {
+          "content-type": "application/json",
+          "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
+        }
+      }
+    },
+    {
+      "scenarioName": "Caching check",
+      "requiredScenarioState": "Second call",
+      "request": {
+        "method": "GET",
+        "url": "/api/v2/projects/cached",
+        "headers": {
+          "if-none-match": {
+            "equalTo": "W/\"3c8960723aae798ea88438c389cd67b5\""
+          },
+          "content-type": {
+            "equalTo": "application/json"
+          },
+          "authorization": {
+            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
+          }
+        }
+      },
+      "response": {
+        "status": 304
+      }
+    }
+  ]
+}

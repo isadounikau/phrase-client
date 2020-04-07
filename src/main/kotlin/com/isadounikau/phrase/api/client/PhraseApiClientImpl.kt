@@ -371,10 +371,14 @@ class PhraseApiClientImpl : PhraseApiClient {
             }, config.cleanUpFareRate.toMillis(), config.cleanUpFareRate.toMillis())
         }
 
-        private fun getInterceptor() = RequestInterceptor {
+        private fun getInterceptor() = RequestInterceptor { request ->
             apply {
-                it.header(HttpHeaders.IF_NONE_MATCH, getETag(it.request().httpMethod().name + it.request().url()))
-                it.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
+                val e = getETag(request.request().httpMethod().name + request.request().url())
+                e?.also {
+                    request.header(HttpHeaders.IF_NONE_MATCH, e)
+                }
+                request.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
+                println()
             }
         }
 
