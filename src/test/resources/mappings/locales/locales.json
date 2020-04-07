@@ -1,11 +1,30 @@
 {
   "mappings": [
     {
-      "scenarioName": "Project Caching Check",
-      "newScenarioState": "Second call",
       "request": {
         "method": "GET",
-        "url": "/api/v2/projects/cached",
+        "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541/locales",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "Authorization": {
+            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "locales/locales-list.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541/locales/a4ca9b45e8721d6636be8e8ba40a90b3",
         "headers": {
           "content-type": {
             "equalTo": "application/json"
@@ -17,33 +36,11 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "projects/project.json",
+        "bodyFileName": "locales/locale.json",
         "headers": {
           "content-type": "application/json",
           "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
         }
-      }
-    },
-    {
-      "scenarioName": "Project Caching Check",
-      "requiredScenarioState": "Second call",
-      "request": {
-        "method": "GET",
-        "url": "/api/v2/projects/cached",
-        "headers": {
-          "if-none-match": {
-            "equalTo": "W/\"3c8960723aae798ea88438c389cd67b5\""
-          },
-          "content-type": {
-            "equalTo": "application/json"
-          },
-          "authorization": {
-            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
-          }
-        }
-      },
-      "response": {
-        "status": 304
       }
     }
   ]

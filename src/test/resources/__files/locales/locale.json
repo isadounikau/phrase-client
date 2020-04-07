@@ -1,0 +1,18 @@
+{
+  "id": "943e69b51641b00d6acbb638f62f4541",
+  "name": "name",
+  "slug": "slug",
+  "main_format": "",
+  "shares_translation_memory": false,
+  "project_image_url": "lenna.png",
+  "created_at": "2018-07-18T13:15:53Z",
+  "updated_at": "2020-04-03T08:10:52Z",
+  "account": {
+    "id": "93614b48",
+    "name": "name",
+    "slug": "slug",
+    "company": "company",
+    "created_at": "2013-08-15T10:31:31Z",
+    "updated_at": "2020-04-07T15:23:52Z"
+  }
+}

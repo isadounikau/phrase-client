@@ -1,11 +1,11 @@
 {
   "mappings": [
     {
-      "scenarioName": "Project Caching Check",
+      "scenarioName": "Locale Caching Check",
       "newScenarioState": "Second call",
       "request": {
         "method": "GET",
-        "url": "/api/v2/projects/cached",
+        "url": "/api/v2/projects/cached/locales/cached",
         "headers": {
           "content-type": {
             "equalTo": "application/json"
@@ -17,22 +17,22 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "projects/project.json",
+        "bodyFileName": "locales/locale.json",
         "headers": {
           "content-type": "application/json",
-          "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
+          "etag": "W/\"4c8960723aae798ea88438c389cd67b5\""
         }
       }
     },
     {
-      "scenarioName": "Project Caching Check",
+      "scenarioName": "Locale Caching Check",
       "requiredScenarioState": "Second call",
       "request": {
         "method": "GET",
-        "url": "/api/v2/projects/cached",
+        "url": "/api/v2/projects/cached/locales/cached",
         "headers": {
           "if-none-match": {
-            "equalTo": "W/\"3c8960723aae798ea88438c389cd67b5\""
+            "equalTo": "W/\"4c8960723aae798ea88438c389cd67b5\""
           },
           "content-type": {
             "equalTo": "application/json"

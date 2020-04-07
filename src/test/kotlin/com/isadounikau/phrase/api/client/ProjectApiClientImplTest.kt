@@ -1,35 +1,10 @@
 package com.isadounikau.phrase.api.client
 
-import com.github.tomakehurst.wiremock.WireMockServer
 import org.junit.Test
-import java.util.UUID
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class PhraseApiClientImplTest {
-
-    private val wireMockServer: WireMockServer = WireMockServer()
-    private lateinit var source: PhraseApiClientImpl
-    private val token = UUID.fromString("2ed95762-34eb-4f26-bfee-306a42649264").toString()
-
-    @BeforeTest
-    fun beforeTest() {
-        wireMockServer.start()
-
-        val config = PhraseApiClientConfig(
-            url = "http://localhost:${wireMockServer.port()}",
-            authKey = token
-        )
-
-        source = PhraseApiClientImpl(config)
-    }
-
-    @AfterTest
-    fun afterTest() {
-        wireMockServer.stop()
-    }
+class ProjectApiClientImplTest: AbstractTest() {
 
     @Test
     fun `get projects when projects exist then return projects`() {
@@ -67,10 +42,11 @@ class PhraseApiClientImplTest {
         //THEN
         assertNotNull(projectOne)
         assertNotNull(projectTwo)
+        assertEquals(projectOne, projectTwo)
     }
 
     @Test(expected = PhraseAppApiException::class)
-    fun `get project when project not exist `() {
+    fun `get project when project not exist then throw exception`() {
         //GIVEN an api
         val projectId = "NOT_FOUND"
 
