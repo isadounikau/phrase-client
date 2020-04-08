@@ -1,0 +1,24 @@
+{
+  "app.error.message": {
+    "message": "Hi ha hagut un error. Si us plau, intenta-ho de nou."
+  },
+  "companyInformation.companyName.label": {
+    "message": "Nom d'empresa"
+  },
+  "companyInformation.streetName.label": {
+    "message": "Adreça"
+  },
+  "companyInformation.streetNumber.label": {
+    "message": "Número de carrer"
+  },
+  "companyInformation.zipCode.label": {
+    "message": "Codi postal"
+  },
+  "contactInformation.emailAddress.company.h2": {
+    "message": "T'enviarem la teva documentació per e-mail a aquesta adreça."
+  },
+  "contactInformation.emailAddress.driver.h2": {
+    "message": "Necesites un e-mail per accedir a l'App.",
+    "description": "Applies to all countries except UK and Ireland"
+  }
+}
