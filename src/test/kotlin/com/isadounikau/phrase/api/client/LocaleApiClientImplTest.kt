@@ -1,9 +1,11 @@
 package com.isadounikau.phrase.api.client
 
+import kotlinx.serialization.ImplicitReflectionSerializer
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@ImplicitReflectionSerializer
 class LocaleApiClientImplTest: AbstractTest() {
 
     @Test

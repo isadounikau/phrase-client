@@ -1,11 +1,13 @@
 package com.isadounikau.phrase.api.client
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import kotlinx.serialization.ImplicitReflectionSerializer
 import java.time.Duration
 import java.util.UUID
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 
+@ImplicitReflectionSerializer
 abstract class AbstractTest {
 
     private val wireMockServer: WireMockServer = WireMockServer()

@@ -4,10 +4,6 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.net.HttpHeaders
 import com.google.common.net.MediaType
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonIOException
-import com.google.gson.JsonSyntaxException
 import com.isadounikau.phrase.api.client.model.CreateKey
 import com.isadounikau.phrase.api.client.model.CreatePhraseLocale
 import com.isadounikau.phrase.api.client.model.CreatePhraseProject
@@ -29,19 +25,23 @@ import feign.Response
 import feign.form.FormEncoder
 import feign.gson.GsonDecoder
 import feign.gson.GsonEncoder
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.parse
 import mu.KotlinLogging
 import java.nio.charset.StandardCharsets
 import kotlin.concurrent.timer
 
 private val log = KotlinLogging.logger {}
 
+@ImplicitReflectionSerializer
 @Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
 class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApiClient, CacheETagApi {
 
     private val client: PhraseApi
     private val responseCache: Cache<CacheKey, Any> = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
     private val eTagCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build<CacheKey, String>()
-    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+    private val gson = Json
 
     init {
         client = Feign.builder()
@@ -278,7 +278,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     override fun getETag(key: CacheKey): String? = eTagCache.getIfPresent(key)
 
-    private inline fun <reified T> processResponse(key: CacheKey, response: Response): T? {
+    private inline fun <reified T: Any> processResponse(key: CacheKey, response: Response): T? {
         log.debug { "Response : status [${response.status()}] \n headers [${response.headers()}]" }
 
         if (response.status() !in 200..400) {
@@ -328,15 +328,12 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         }
     }
 
-    private inline fun <reified T> getObject(response: Response): T {
+    private inline fun <reified T: Any> getObject(response: Response): T {
         try {
-            val responseObject = gson.fromJson(response.body().asReader(StandardCharsets.UTF_8), T::class.java)
+            val responseObject = gson.parse<T>(response.body().asReader(StandardCharsets.UTF_8).toString())
             log.debug { "Response object : $responseObject" }
             return responseObject
-        } catch (ex: JsonSyntaxException) {
-            log.warn { ex.message }
-            throw PhraseAppApiException("Error during parsing response", ex)
-        } catch (ex: JsonIOException) {
+        } catch (ex: Exception) {
             log.warn { ex.message }
             throw PhraseAppApiException("Error during parsing response", ex)
         }
