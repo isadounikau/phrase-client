@@ -6,7 +6,6 @@ import com.isadounikau.phrase.api.client.model.CreatePhraseProject
 import com.isadounikau.phrase.api.client.model.CreateTranslation
 import com.isadounikau.phrase.api.client.model.DownloadPhraseLocaleProperties
 import com.isadounikau.phrase.api.client.model.Key
-import com.isadounikau.phrase.api.client.model.Keys
 import com.isadounikau.phrase.api.client.model.PhraseLocale
 import com.isadounikau.phrase.api.client.model.PhraseLocaleMessages
 import com.isadounikau.phrase.api.client.model.PhraseLocales
@@ -37,8 +36,7 @@ interface PhraseApiClient {
 
     fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties? = null): PhraseLocaleMessages?
 
-    fun downloadLocaleAsProperties(projectId: String, localeId: String,
-                                   escapeSingleQuotes: Boolean, branch: String? = null): ByteArray?
+    fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties? = null): ByteArray?
 
     fun deleteLocale(projectId: String, localeId: String, branch: String? = null)
 
@@ -46,15 +44,7 @@ interface PhraseApiClient {
 
     fun createTranslation(projectId: String, createTranslation: CreateTranslation): Translation?
 
-    fun createTranslation(projectId: String, localeId: String,
-                          keyId: String, content: String,
-                          branch: String? = null): Translation?
-
     fun createKey(projectId: String, createKey: CreateKey): Key?
-
-    fun createKey(projectId: String, name: String, tags: ArrayList<String>?, branch: String? = null): Key?
-
-    fun searchKey(projectId: String, localeId: String?, q: String?, branch: String? = null): Keys?
 
     fun deleteKey(projectId: String, keyId: String, branch: String? = null): Boolean
 

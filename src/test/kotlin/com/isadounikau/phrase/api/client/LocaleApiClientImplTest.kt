@@ -48,6 +48,23 @@ class LocaleApiClientImplTest: AbstractTest() {
         assertEquals(localeOne, localeTwo)
     }
 
+    @Test
+    fun `get locale when locale with branch exist and been already requested then return locale from cache`() {
+        //GIVEN project Id
+        val projectId = "cached"
+        val localeId = "cached"
+        val branch = "master"
+
+        //WHEN
+        val localeOne = source.locale(projectId, localeId, branch)
+        val localeTwo = source.locale(projectId, localeId, branch)
+
+        //THEN
+        assertNotNull(localeOne)
+        assertNotNull(localeTwo)
+        assertEquals(localeOne, localeTwo)
+    }
+
     @Test(expected = PhraseAppApiException::class)
     fun `get locale when locale not exist then throw exception`() {
         //GIVEN an api

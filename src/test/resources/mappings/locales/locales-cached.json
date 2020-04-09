@@ -2,6 +2,7 @@
   "mappings": [
     {
       "scenarioName": "Locale Caching Check",
+      "requiredScenarioState": "Started",
       "newScenarioState": "Second call",
       "request": {
         "method": "GET",
@@ -30,6 +31,53 @@
       "request": {
         "method": "GET",
         "url": "/api/v2/projects/cached/locales/cached",
+        "headers": {
+          "if-none-match": {
+            "equalTo": "W/\"4c8960723aae798ea88438c389cd67b5\""
+          },
+          "content-type": {
+            "equalTo": "application/json"
+          },
+          "authorization": {
+            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
+          }
+        }
+      },
+      "response": {
+        "status": 304
+      }
+    },
+    {
+      "scenarioName": "Locale Caching Check with Branch",
+      "requiredScenarioState": "Started",
+      "newScenarioState": "Second call",
+      "request": {
+        "method": "GET",
+        "url": "/api/v2/projects/cached/locales/cached?branch=master",
+        "headers": {
+          "content-type": {
+            "equalTo": "application/json"
+          },
+          "authorization": {
+            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "locales/locale.json",
+        "headers": {
+          "content-type": "application/json",
+          "etag": "W/\"4c8960723aae798ea88438c389cd67b5\""
+        }
+      }
+    },
+    {
+      "scenarioName": "Locale Caching Check with Branch",
+      "requiredScenarioState": "Second call",
+      "request": {
+        "method": "GET",
+        "url": "/api/v2/projects/cached/locales/cached?branch=master",
         "headers": {
           "if-none-match": {
             "equalTo": "W/\"4c8960723aae798ea88438c389cd67b5\""

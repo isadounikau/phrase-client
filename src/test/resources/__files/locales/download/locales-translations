@@ -1,0 +1,5 @@
+app.error.message = Hi ha hagut un error. Si us plau, intenta-ho de nou.
+companyInformation.companyName.label = Nom d''empresa
+companyInformation.streetName.label = Adre\u00e7a
+companyInformation.streetNumber.label = N\u00famero de carrer
+companyInformation.zipCode.label = Codi postal
