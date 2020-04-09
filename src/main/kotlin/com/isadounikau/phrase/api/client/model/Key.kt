@@ -3,7 +3,7 @@ package com.isadounikau.phrase.api.client.model
 import java.io.File
 import java.util.Date
 
-class Keys: ArrayList<Key>()
+typealias Keys = List<Key>
 
 data class Key(
     val id: String,
