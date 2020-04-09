@@ -22,12 +22,15 @@ import com.isadounikau.phrase.api.client.model.PhraseProjects
 import com.isadounikau.phrase.api.client.model.Translation
 import com.isadounikau.phrase.api.client.model.Translations
 import com.isadounikau.phrase.api.client.model.UpdatePhraseProject
+import com.isadounikau.phrase.api.client.utils.Constants.HS_BAD_REQUEST
+import com.isadounikau.phrase.api.client.utils.Constants.HS_NOT_MODIFIED
+import com.isadounikau.phrase.api.client.utils.Constants.HS_NO_CONTENT
+import com.isadounikau.phrase.api.client.utils.Constants.HS_OK
 import feign.Feign
 import feign.Request
 import feign.RequestInterceptor
 import feign.Response
 import feign.form.FormEncoder
-import feign.gson.GsonDecoder
 import feign.gson.GsonEncoder
 import mu.KotlinLogging
 import java.nio.charset.StandardCharsets
@@ -46,7 +49,6 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
     init {
         client = Feign.builder()
             .requestInterceptor(getInterceptor())
-            .decoder(GsonDecoder())
             .encoder(FormEncoder(GsonEncoder()))
             .target(PhraseApi::class.java, config.url)
 
@@ -101,7 +103,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         val response = client.deleteProject(projectId)
         val key = CacheKey(Request.HttpMethod.DELETE, "/api/v2/projects/$projectId")
         processResponse<Void>(key, response)
-        return response.status() == 204
+        return response.status() == HS_NO_CONTENT
     }
 
     override fun createProject(phraseProject: CreatePhraseProject): PhraseProject? {
@@ -237,11 +239,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
     }
 
     override fun createKey(projectId: String, createKey: CreateKey): Key? {
-        log.debug {
-            "Creating keys [${createKey.name}] for " +
-                "[${createKey.branch}] branch of " +
-                "project [$projectId]"
-        }
+        log.debug { "Creating keys [${createKey.name}] for [${createKey.branch}] branch of project [$projectId]" }
         val response = client.createKey(
             projectId,
             createKey.name,
@@ -269,7 +267,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
     override fun deleteKey(projectId: String, keyId: String, branch: String?): Boolean {
         log.debug { "Deleting key [$keyId] for [${branch}] branch of project [$projectId]" }
         val response = client.deleteKey(projectId, keyId, branch)
-        return response.status() == 204
+        return response.status() == HS_NO_CONTENT
     }
 
     override fun putETag(key: CacheKey, eTag: String) {
@@ -281,7 +279,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
     private inline fun <reified T> processResponse(key: CacheKey, response: Response): T? {
         log.debug { "Response : status [${response.status()}] \n headers [${response.headers()}]" }
 
-        if (response.status() !in 200..400) {
+        if (response.status() !in HS_OK..HS_BAD_REQUEST) {
             val message = response.body()?.asReader(StandardCharsets.UTF_8)?.readText()
             log.warn {
                 """
@@ -294,7 +292,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             throw PhraseAppApiException(response.status(), message)
         }
 
-        return if (response.status() == 304) {
+        return if (response.status() == HS_NOT_MODIFIED) {
             val cacheResponse = responseCache.getIfPresent(key) as T
             log.debug { "Cached response : $cacheResponse" }
             cacheResponse
