@@ -30,47 +30,56 @@ import feign.form.FormEncoder
 import feign.gson.GsonDecoder
 import feign.gson.GsonEncoder
 import mu.KotlinLogging
-import java.io.File
 import java.nio.charset.StandardCharsets
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.timer
 
-//TODO JvmOverloads
-@Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
-class PhraseApiClientImpl(private val config: PhraseApiClientConfig): PhraseApiClient {
+private val log = KotlinLogging.logger {}
 
-    private companion object val log = KotlinLogging.logger {}
+@Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
+class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApiClient, CacheApi {
 
     private val client: PhraseApi
-    private val responseCache: Cache<CacheKey, Any>
+    private val responseCache: Cache<CacheKey, Any> = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
+    private val eTagCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build<CacheKey, String>()
+    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
 
     init {
-        client = PhraseApiImpl(config)
-        responseCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(config.responseCacheExpireAfterWrite)
-            .build()
-        runCleaningTimer()
-    }
+        client = Feign.builder()
+            .requestInterceptor(getInterceptor())
+            .decoder(GsonDecoder())
+            .encoder(FormEncoder(GsonEncoder()))
+            .target(PhraseApi::class.java, config.url)
 
-    // Response
-    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+        timer(name = "eTagCache",
+            daemon = true,
+            initialDelay = config.cleanUpFareRate.toMillis(),
+            period = config.cleanUpFareRate.toMillis()) {
+            try {
+                log.debug { "CleanUp of eTags cache started" }
+                eTagCache.cleanUp()
+                log.info { "CleanUp of eTags cache finished" }
+            } catch (ex: Exception) {
+                log.warn(ex) { "Error during eTags cleanup, $ex" }
+            }
+        }
+
+        timer(name = "responseCache",
+            daemon = true,
+            initialDelay = config.cleanUpFareRate.toMillis(),
+            period = config.cleanUpFareRate.toMillis()) {
+            try {
+                log.debug { "CleanUp of responses cache started" }
+                responseCache.cleanUp()
+                log.info { "CleanUp of responses cache finished" }
+            } catch (ex: Exception) {
+                log.warn(ex) { "Error during responses cleanup $ex" }
+            }
+        }
+    }
 
     constructor(url: String, authKey: String) : this(PhraseApiClientConfig(url = url, authKey = authKey))
 
     constructor(authKey: String) : this(PhraseApiClientConfig(authKey = authKey))
-
-    private fun runCleaningTimer() = timer(name = "responseCache",
-        daemon = true,
-        initialDelay = config.cleanUpFareRate.toMillis(),
-        period = config.cleanUpFareRate.toMillis()) {
-        try {
-            log.debug { "CleanUp of responses cache started" }
-            responseCache.cleanUp()
-            log.info { "CleanUp of responses cache finished" }
-        } catch (ex: Exception) {
-            log.warn(ex) { "Error during responses cleanup $ex" }
-        }
-    }
 
     override fun projects(): PhraseProjects? {
         val response = client.projects()
@@ -306,7 +315,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig): PhraseApiC
 
             getETag(response)?.also {
                 responseCache.put(key, responseObject)
-                (client as CacheApi).putETag(key, it)
+                putETag(key, it)
             }
 
             responseObject
@@ -337,173 +346,23 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig): PhraseApiC
     private fun buildQueryMap(vararg entries: Pair<String, Any?>) =
         entries.filter { it.second != null }.associate { (k, v) -> k to listOf(v) }
 
-    @Suppress("TooManyFunctions")
-    private class PhraseApiImpl(
-        val config: PhraseApiClientConfig
-    ) : PhraseApi, CacheApi {
+    override fun putETag(key: CacheKey, eTag: String) {
+        eTagCache.put(key, eTag)
+    }
 
-        companion object
+    override fun getETag(key: CacheKey): String? = eTagCache.getIfPresent(key)
 
-        val log = KotlinLogging.logger {}
-
-        private val target: PhraseApi
-        private val eTagCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build<CacheKey, String>()
-
-        init {
-            target = Feign.builder()
-                .requestInterceptor(getInterceptor())
-                .decoder(GsonDecoder())
-                .encoder(FormEncoder(GsonEncoder()))
-                .target(PhraseApi::class.java, config.url)
-
-            timer(name = "eTagCache",
-                daemon = true,
-                initialDelay = config.cleanUpFareRate.toMillis(),
-                period = config.cleanUpFareRate.toMillis()) {
-                try {
-                    log.debug { "CleanUp of eTags cache started" }
-                    eTagCache.cleanUp()
-                    log.info { "CleanUp of eTags cache finished" }
-                } catch (ex: Exception) {
-                    log.warn(ex) { "Error during eTags cleanup, $ex" }
-                }
-            }
+    private fun getInterceptor() = RequestInterceptor { template ->
+        apply {
+            val request = template.request()
+            val key = CacheKey(
+                request.httpMethod(),
+                request.url().substringBefore('?'),
+                request.requestTemplate().queries()
+            )
+            template.header(HttpHeaders.IF_NONE_MATCH, getETag(key))
+            template.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
         }
-
-        private fun getInterceptor() = RequestInterceptor { template ->
-            apply {
-                val request = template.request()
-                val key = CacheKey(
-                    request.httpMethod(),
-                    request.url().substringBefore('?'),
-                    request.requestTemplate().queries()
-                )
-                template.header(HttpHeaders.IF_NONE_MATCH, getETag(key))
-                template.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
-            }
-        }
-
-        override fun putETag(key: CacheKey, eTag: String) {
-            eTagCache.put(key, eTag)
-        }
-
-        override fun getETag(key: CacheKey): String? = eTagCache.getIfPresent(key)
-
-        //PROJECT
-        override fun projects(): Response = target.projects()
-
-        override fun project(projectId: String): Response = target.project(projectId)
-
-        override fun createProject(
-            name: String,
-            projectImage: File?,
-            mainFormat: String?,
-            sharesTranslationMemory: String?,
-            removeProjectImage: Boolean?,
-            accountId: String?
-        ): Response = target.createProject(
-            name = name,
-            mainFormat = mainFormat,
-            accountId = accountId,
-            projectImage = projectImage,
-            removeProjectImage = removeProjectImage,
-            sharesTranslationMemory = sharesTranslationMemory
-        )
-
-        override fun updateProject(
-            projectId: String,
-            name: String,
-            projectImage: File?,
-            mainFormat: String?,
-            sharesTranslationMemory: String?,
-            removeProjectImage: Boolean?,
-            accountId: String?
-        ): Response = target.updateProject(
-            projectId = projectId,
-            name = name,
-            mainFormat = mainFormat,
-            accountId = accountId,
-            projectImage = projectImage,
-            removeProjectImage = removeProjectImage,
-            sharesTranslationMemory = sharesTranslationMemory
-        )
-
-        override fun deleteProject(projectId: String): Response = target.deleteProject(projectId)
-
-        //LOCALE
-        override fun locales(projectId: String, branch: String?): Response = target.locales(projectId, branch)
-
-        override fun locale(projectId: String, localeId: String, queries: Map<String, List<Any?>>): Response = target.locale(projectId, localeId, queries)
-
-        override fun downloadLocale(
-            projectId: String,
-            localeId: String,
-            queries: Map<String, List<Any?>>
-        ): Response = target.downloadLocale(projectId, localeId, queries)
-
-        override fun createLocale(
-            projectId: String,
-            name: String,
-            code: String,
-            branch: String?,
-            default: Boolean?,
-            mail: Boolean?,
-            rtl: Boolean?,
-            sourceLocaleId: String?,
-            unverifyNewTranslations: String?,
-            unverifyUpdatedTranslations: String?,
-            autotranslate: String?
-        ): Response = target.createLocale(projectId, name, code, branch, default, mail, rtl, sourceLocaleId, unverifyNewTranslations, unverifyUpdatedTranslations, autotranslate)
-
-        override fun updateLocale(
-            projectId: String,
-            localeId: String,
-            name: String,
-            code: String,
-            branch: String?,
-            default: Boolean?,
-            mail: Boolean?,
-            rtl: Boolean?,
-            sourceLocaleId: String?,
-            unverifyNewTranslations: String?,
-            unverifyUpdatedTranslations: String?,
-            autotranslate: String?
-        ): Response = target.updateLocale(projectId, localeId, name, code, branch, default, mail, rtl, sourceLocaleId, unverifyNewTranslations, unverifyUpdatedTranslations, autotranslate)
-
-        override fun deleteLocale(projectId: String, localeId: String, branch: String?): Response = target.deleteLocale(projectId, localeId, branch)
-
-        //TRANSLATION
-        override fun translations(projectId: String, localeId: String, branch: String?): Response = target.translations(projectId, localeId, branch)
-
-        override fun createTranslation(projectId: String, localeId: String, keyId: String, content: String, branch: String?): Response = target.createTranslation(projectId,
-            localeId, keyId, content, branch)
-
-        //KEYS
-        override fun createKey(
-            projectId: String,
-            name: String,
-            tags: ArrayList<String>?,
-            description: String?,
-            branch: String?,
-            plural: Boolean?,
-            namePlural: String?,
-            dataType: String?,
-            maxCharactersAllowed: Number?,
-            screenshot: File?,
-            removeScreenshot: Boolean?,
-            unformatted: Boolean?,
-            xmlSpacePreserve: Boolean?,
-            originalFile: String?,
-            localizedFormatString: String?,
-            localizedFormatKey: String?
-        ): Response = target.createKey(projectId, name, tags, description, branch, plural, namePlural, dataType, maxCharactersAllowed, screenshot, removeScreenshot, unformatted,
-            xmlSpacePreserve, originalFile, localizedFormatString, localizedFormatKey)
-
-        override fun createKey(projectId: String, name: String, branch: String?, tags: ArrayList<String>?): Response = target.createKey(projectId, name, branch, tags)
-
-        override fun searchKey(projectId: String, localeId: String?, q: String?, branch: String?): Response = target.searchKey(projectId, localeId, q, branch)
-
-        override fun deleteKey(projectId: String, keyId: String, branch: String?): Response = target.deleteKey(projectId, keyId, branch)
     }
 }
 
