@@ -280,7 +280,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         log.debug { "Response : status [${response.status()}] \n headers [${response.headers()}]" }
 
         if (response.status() !in HS_OK..HS_BAD_REQUEST) {
-            val message = response.body()?.asReader(StandardCharsets.UTF_8)?.readText()
+            val message = response.body()?.asReader(StandardCharsets.UTF_8)?.readText()?.trim()
             log.warn {
                 """
                 |${key.url}
