@@ -2,9 +2,10 @@ package com.isadounikau.phrase.api.client
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
-class LocaleApiClientImplTest: AbstractTest() {
+class LocaleApiClientImplTest : AbstractTest() {
 
     @Test
     fun `get locales when projects exist then return locales`() {
@@ -65,15 +66,21 @@ class LocaleApiClientImplTest: AbstractTest() {
         assertEquals(localeOne, localeTwo)
     }
 
-    @Test(expected = PhraseAppApiException::class)
+    @Test
     fun `get locale when locale not exist then throw exception`() {
         //GIVEN an api
         val projectId = "943e69b51641b00d6acbb638f62f4541"
         val localeId = "NOT_FOUND"
 
         //WHEN
-        source.locale(projectId, localeId)
+        val ex = assertFailsWith<PhraseAppApiException> { source.locale(projectId, localeId) }
 
         //THEN exception
+        assertNotNull(ex)
+        assertEquals(
+"""Code [404] : {
+  "message": "Not Found",
+  "documentation_url": "https://developers.phrase.com/api/"
+}""", ex.message)
     }
 }
