@@ -175,7 +175,7 @@ interface PhraseApi {
 
 }
 
-interface CacheApi {
+interface CacheETagApi {
 
     fun putETag(key: CacheKey, eTag: String)
 
