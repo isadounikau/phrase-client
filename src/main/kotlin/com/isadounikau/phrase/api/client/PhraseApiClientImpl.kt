@@ -37,21 +37,14 @@ import kotlin.concurrent.timer
 
 //TODO JvmOverloads
 @Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
-class PhraseApiClientImpl : PhraseApiClient {
+class PhraseApiClientImpl(private val config: PhraseApiClientConfig): PhraseApiClient {
 
-    private companion object
-
-    val log = KotlinLogging.logger {}
+    private companion object val log = KotlinLogging.logger {}
 
     private val client: PhraseApi
-    private val config: PhraseApiClientConfig
     private val responseCache: Cache<CacheKey, Any>
 
-    // Response
-    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
-
-    constructor(config: PhraseApiClientConfig) {
-        this.config = config
+    init {
         client = PhraseApiImpl(config)
         responseCache = CacheBuilder.newBuilder()
             .expireAfterWrite(config.responseCacheExpireAfterWrite)
@@ -59,9 +52,12 @@ class PhraseApiClientImpl : PhraseApiClient {
         runCleaningTimer()
     }
 
-    constructor(url: String, authKey: String) : this(PhraseApiClientConfig(url, authKey))
+    // Response
+    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
 
-    constructor(authKey: String) : this(PhraseApiClientConfig(authKey))
+    constructor(url: String, authKey: String) : this(PhraseApiClientConfig(url = url, authKey = authKey))
+
+    constructor(authKey: String) : this(PhraseApiClientConfig(authKey = authKey))
 
     private fun runCleaningTimer() = timer(name = "responseCache",
         daemon = true,
@@ -346,7 +342,9 @@ class PhraseApiClientImpl : PhraseApiClient {
         val config: PhraseApiClientConfig
     ) : PhraseApi, CacheApi {
 
-        companion object val log = KotlinLogging.logger {}
+        companion object
+
+        val log = KotlinLogging.logger {}
 
         private val target: PhraseApi
         private val eTagCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build<CacheKey, String>()
