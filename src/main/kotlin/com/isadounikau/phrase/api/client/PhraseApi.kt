@@ -2,6 +2,8 @@ package com.isadounikau.phrase.api.client
 
 import feign.Headers
 import feign.Param
+import feign.QueryMap
+import feign.Request
 import feign.RequestLine
 import feign.Response
 import java.io.File
@@ -89,7 +91,7 @@ interface PhraseApi {
     fun locale(
         @Param("projectId") projectId: String,
         @Param("localeId") localeId: String,
-        @Param("branch") branch: String? = null
+        @QueryMap queries: Map<String, List<Any?>>
     ): Response
 
     @RequestLine("DELETE /api/v2/projects/{projectId}/locales/{localeId}?branch={branch}")
@@ -106,11 +108,7 @@ interface PhraseApi {
     fun downloadLocale(
         @Param("projectId") projectId: String,
         @Param("localeId") localeId: String,
-        @Param("fileFormat") fileFormat: String,
-        @Param("escapeSingleQuotes") escapeSingleQuotes: Boolean? = false,
-        @Param("includeEmptyTranslations") includeEmptyTranslations: Boolean? = false,
-        @Param("fallbackLocaleId") fallbackLocaleId: String? = null,
-        @Param("branch") branch: String? = null
+        @QueryMap queries: Map<String, List<Any?>>
     ): Response
 
     //Translations
@@ -179,8 +177,14 @@ interface PhraseApi {
 
 interface CacheApi {
 
-    fun putETag(key: String, eTag: String)
+    fun putETag(key: CacheKey, eTag: String)
 
-    fun getETag(key: String): String?
+    fun getETag(key: CacheKey): String?
 
 }
+
+data class CacheKey(
+    val httpMethod: Request.HttpMethod,
+    val url: String,
+    val queryMap: Map<String, Any?>? = null
+)

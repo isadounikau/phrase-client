@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541/locales/a4ca9b45e8721d6636be8e8ba40a90b3/download?file_format=json&format_options%5Bescape_single_quotes%5D=false&include_empty_translations=false",
+        "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541/locales/a4ca9b45e8721d6636be8e8ba40a90b3/download?file_format=json",
         "headers": {
           "Content-Type": {
             "equalTo": "application/json"
@@ -24,7 +24,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541/locales/a4ca9b45e8721d6636be8e8ba40a90b3/download?file_format=properties&format_options%5Bescape_single_quotes%5D=false&include_empty_translations=false",
+        "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541/locales/a4ca9b45e8721d6636be8e8ba40a90b3/download?file_format=properties",
         "headers": {
           "Content-Type": {
             "equalTo": "application/json"
