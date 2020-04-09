@@ -353,16 +353,14 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         entries.filter { it.second != null }.associate { (k, v) -> k to listOf(v) }
 
     private fun getInterceptor() = RequestInterceptor { template ->
-        apply {
-            val request = template.request()
-            val key = CacheKey(
-                request.httpMethod(),
-                request.url().substringBefore('?'),
-                request.requestTemplate().queries()
-            )
-            template.header(HttpHeaders.IF_NONE_MATCH, getETag(key))
-            template.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
-        }
+        val request = template.request()
+        val key = CacheKey(
+            request.httpMethod(),
+            request.url().substringBefore('?'),
+            request.requestTemplate().queries()
+        )
+        template.header(HttpHeaders.IF_NONE_MATCH, getETag(key))
+        template.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
     }
 }
 
