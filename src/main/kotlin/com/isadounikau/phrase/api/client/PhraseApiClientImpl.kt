@@ -36,7 +36,7 @@ import kotlin.concurrent.timer
 private val log = KotlinLogging.logger {}
 
 @Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
-class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApiClient, CacheApi {
+class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApiClient, CacheETagApi {
 
     private val client: PhraseApi
     private val responseCache: Cache<CacheKey, Any> = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
@@ -272,6 +272,12 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return response.status() == 204
     }
 
+    override fun putETag(key: CacheKey, eTag: String) {
+        eTagCache.put(key, eTag)
+    }
+
+    override fun getETag(key: CacheKey): String? = eTagCache.getIfPresent(key)
+
     private inline fun <reified T> processResponse(key: CacheKey, response: Response): T? {
         log.debug { "Response : status [${response.status()}] \n headers [${response.headers()}]" }
 
@@ -345,12 +351,6 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     private fun buildQueryMap(vararg entries: Pair<String, Any?>) =
         entries.filter { it.second != null }.associate { (k, v) -> k to listOf(v) }
-
-    override fun putETag(key: CacheKey, eTag: String) {
-        eTagCache.put(key, eTag)
-    }
-
-    override fun getETag(key: CacheKey): String? = eTagCache.getIfPresent(key)
 
     private fun getInterceptor() = RequestInterceptor { template ->
         apply {
