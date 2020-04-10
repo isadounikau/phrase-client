@@ -78,9 +78,11 @@ class LocaleApiClientImplTest : AbstractTest() {
         //THEN exception
         assertNotNull(ex)
         assertEquals(
-"""Code [404] : {
-  "message": "Not Found",
-  "documentation_url": "https://developers.phrase.com/api/"
-}""", ex.message)
+            """
+            |Code [404] : {
+            |  "message": "Not Found",
+            |  "documentation_url": "https://developers.phrase.com/api/"
+            |}
+            """.trimMargin(), ex.message)
     }
 }

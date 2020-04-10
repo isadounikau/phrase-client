@@ -1,13 +1,15 @@
 package com.isadounikau.phrase.api.client
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.net.HttpHeaders
 import com.google.common.net.MediaType
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonIOException
-import com.google.gson.JsonSyntaxException
 import com.isadounikau.phrase.api.client.model.CreateKey
 import com.isadounikau.phrase.api.client.model.CreatePhraseLocale
 import com.isadounikau.phrase.api.client.model.CreatePhraseProject
@@ -30,8 +32,7 @@ import feign.Feign
 import feign.Request
 import feign.RequestInterceptor
 import feign.Response
-import feign.form.FormEncoder
-import feign.gson.GsonEncoder
+import feign.jackson.JacksonEncoder
 import mu.KotlinLogging
 import java.nio.charset.StandardCharsets
 import kotlin.concurrent.timer
@@ -41,17 +42,28 @@ private val log = KotlinLogging.logger {}
 @Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
 class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApiClient, CacheETagApi {
 
+    constructor(authKey: String) : this(PhraseApiClientConfig(authKey = authKey))
+
+    constructor(url: String, authKey: String) : this(PhraseApiClientConfig(url = url, authKey = authKey))
+
     private val client: PhraseApi
-    private val responseCache: Cache<CacheKey, Any> = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
-    private val eTagCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build<CacheKey, String>()
-    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+    private val responseCache: Cache<CacheKey, Any>
+    private val eTagCache: Cache<CacheKey, String>
+    private val mapper: ObjectMapper
 
     init {
         client = Feign.builder()
             .requestInterceptor(getInterceptor())
-            .encoder(FormEncoder(GsonEncoder()))
+            .encoder(JacksonEncoder())
             .target(PhraseApi::class.java, config.url)
 
+        mapper = ObjectMapper()
+            .registerModule(KotlinModule())
+            .registerModule(JavaTimeModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+
+        eTagCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
         timer(name = "eTagCache",
             daemon = true,
             initialDelay = config.cleanUpFareRate.toMillis(),
@@ -65,6 +77,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             }
         }
 
+        responseCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
         timer(name = "responseCache",
             daemon = true,
             initialDelay = config.cleanUpFareRate.toMillis(),
@@ -79,11 +92,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         }
     }
 
-    constructor(url: String, authKey: String) : this(PhraseApiClientConfig(url = url, authKey = authKey))
-
-    constructor(authKey: String) : this(PhraseApiClientConfig(authKey = authKey))
-
-    override fun projects(): PhraseProjects? {
+    override fun projects(): PhraseProjects {
         val response = client.projects()
         log.debug { "Get projects" }
         val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects")
@@ -91,7 +100,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun project(projectId: String): PhraseProject? {
+    override fun project(projectId: String): PhraseProject {
         val response = client.project(projectId)
         log.debug { "Get project [$projectId]" }
         val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects/$projectId")
@@ -106,7 +115,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return response.status() == HS_NO_CONTENT
     }
 
-    override fun createProject(phraseProject: CreatePhraseProject): PhraseProject? {
+    override fun createProject(phraseProject: CreatePhraseProject): PhraseProject {
         log.debug { "Create project [$phraseProject]" }
         val response = client.createProject(
             phraseProject.name,
@@ -120,7 +129,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun updateProject(projectId: String, phraseProject: UpdatePhraseProject): PhraseProject? {
+    override fun updateProject(projectId: String, phraseProject: UpdatePhraseProject): PhraseProject {
         log.debug { "Update project [$phraseProject]" }
         val response = client.updateProject(
             projectId,
@@ -135,7 +144,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun locale(projectId: String, localeId: String, branch: String?): PhraseLocale? {
+    override fun locale(projectId: String, localeId: String, branch: String?): PhraseLocale {
         log.debug { "Get locale [$localeId] for the [$branch] branch of project [$projectId]" }
         val queryMap = buildQueryMap("branch" to branch)
         val response = client.locale(projectId, localeId, queryMap)
@@ -145,7 +154,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun locales(projectId: String, branch: String?): PhraseLocales? {
+    override fun locales(projectId: String, branch: String?): PhraseLocales {
         log.debug { "Get locales for the [$branch] branch of project [$projectId]" }
         val response = client.locales(projectId, branch)
 
@@ -155,7 +164,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun createLocale(projectId: String, locale: CreatePhraseLocale): PhraseLocale? {
+    override fun createLocale(projectId: String, locale: CreatePhraseLocale): PhraseLocale {
         log.debug { "Create locale [$locale] for project [$projectId]" }
         val response = client.createLocale(
             projectId,
@@ -175,7 +184,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): PhraseLocaleMessages? {
+    override fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): PhraseLocaleMessages {
         log.debug { "Download locale [$localeId] for project [$projectId]" }
 
         val queryMap = buildQueryMap(
@@ -191,7 +200,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): ByteArray? {
+    override fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): ByteArray {
         log.debug { "Download locale [$localeId] branch of project [$projectId]" }
 
         val queryMap = buildQueryMap(
@@ -213,7 +222,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         client.deleteLocale(projectId, localeId, branch)
     }
 
-    override fun translations(project: PhraseProject, locale: PhraseLocale, branch: String?): Translations? {
+    override fun translations(project: PhraseProject, locale: PhraseLocale, branch: String?): Translations {
         log.debug { "Get translations for locale [${locale.id}] for [$branch] branch of project [${project.id}]" }
         val response = client.translations(project.id, locale.id, branch)
 
@@ -223,7 +232,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun createTranslation(projectId: String, createTranslation: CreateTranslation): Translation? {
+    override fun createTranslation(projectId: String, createTranslation: CreateTranslation): Translation {
         log.debug {
             "Creating the translation [${createTranslation.content}] for " +
                 "locale [${createTranslation.localeId}] for " +
@@ -238,7 +247,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun createKey(projectId: String, createKey: CreateKey): Key? {
+    override fun createKey(projectId: String, createKey: CreateKey): Key {
         log.debug { "Creating keys [${createKey.name}] for [${createKey.branch}] branch of project [$projectId]" }
         val response = client.createKey(
             projectId,
@@ -276,7 +285,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     override fun getETag(key: CacheKey): String? = eTagCache.getIfPresent(key)
 
-    private inline fun <reified T> processResponse(key: CacheKey, response: Response): T? {
+    private inline fun <reified T> processResponse(key: CacheKey, response: Response): T {
         log.debug { "Response : status [${response.status()}] \n headers [${response.headers()}]" }
 
         if (response.status() !in HS_OK..HS_BAD_REQUEST) {
@@ -328,24 +337,19 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     private inline fun <reified T> getObject(response: Response): T {
         try {
-            val responseObject = gson.fromJson(response.body().asReader(StandardCharsets.UTF_8), T::class.java)
+            val responseObject = mapper.readValue<T>(response.body().asReader(StandardCharsets.UTF_8))
             log.debug { "Response object : $responseObject" }
             return responseObject
-        } catch (ex: JsonSyntaxException) {
-            log.warn { ex.message }
-            throw PhraseAppApiException("Error during parsing response", ex)
-        } catch (ex: JsonIOException) {
+        } catch (ex: Exception) {
             log.warn { ex.message }
             throw PhraseAppApiException("Error during parsing response", ex)
         }
     }
 
-    private fun getETag(response: Response): String? {
-        val eTagHeader = response.headers()
-            .entries
-            .find { it.key.equals(HttpHeaders.ETAG, true) }
-        return eTagHeader?.value?.first()
-    }
+    private fun getETag(response: Response): String? = response.headers()
+        .entries
+        .find { it.key.equals(HttpHeaders.ETAG, true) }
+        ?.value?.first()
 
     private fun buildQueryMap(vararg entries: Pair<String, Any?>) =
         entries.filter { it.second != null }.associate { (k, v) -> k to listOf(v) }
@@ -357,7 +361,9 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             request.url().substringBefore('?'),
             request.requestTemplate().queries()
         )
-        template.header(HttpHeaders.IF_NONE_MATCH, getETag(key))
+        getETag(key)?.also {
+            template.header(HttpHeaders.IF_NONE_MATCH, it)
+        }
         template.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
     }
 }

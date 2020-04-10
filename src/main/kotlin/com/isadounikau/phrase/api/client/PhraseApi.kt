@@ -134,7 +134,7 @@ interface PhraseApi {
     fun createKey(
         @Param("project_id") projectId: String,
         @Param("name") name: String,
-        @Param("tags") tags: ArrayList<String>? = null,
+        @Param("tags") tags: List<String>? = null,
         @Param("description") description: String? = null,
         @Param("branch") branch: String? = null,
         @Param("plural") plural: Boolean? = null,

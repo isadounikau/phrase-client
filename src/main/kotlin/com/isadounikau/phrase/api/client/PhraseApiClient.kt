@@ -18,33 +18,33 @@ import com.isadounikau.phrase.api.client.model.UpdatePhraseProject
 @Suppress("TooManyFunctions")
 interface PhraseApiClient {
 
-    fun projects(): PhraseProjects?
+    fun projects(): PhraseProjects
 
-    fun project(projectId: String): PhraseProject?
+    fun project(projectId: String): PhraseProject
 
     fun deleteProject(projectId: String): Boolean
 
-    fun createProject(phraseProject: CreatePhraseProject): PhraseProject?
+    fun createProject(phraseProject: CreatePhraseProject): PhraseProject
 
-    fun updateProject(projectId: String, phraseProject: UpdatePhraseProject): PhraseProject?
+    fun updateProject(projectId: String, phraseProject: UpdatePhraseProject): PhraseProject
 
-    fun locale(projectId: String, localeId: String, branch: String? = null): PhraseLocale?
+    fun locale(projectId: String, localeId: String, branch: String? = null): PhraseLocale
 
-    fun locales(projectId: String, branch: String? = null): PhraseLocales?
+    fun locales(projectId: String, branch: String? = null): PhraseLocales
 
     fun createLocale(projectId: String, locale: CreatePhraseLocale): PhraseLocale?
 
-    fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties? = null): PhraseLocaleMessages?
+    fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties? = null): PhraseLocaleMessages
 
-    fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties? = null): ByteArray?
+    fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties? = null): ByteArray
 
     fun deleteLocale(projectId: String, localeId: String, branch: String? = null)
 
-    fun translations(project: PhraseProject, locale: PhraseLocale, branch: String? = null): Translations?
+    fun translations(project: PhraseProject, locale: PhraseLocale, branch: String? = null): Translations
 
-    fun createTranslation(projectId: String, createTranslation: CreateTranslation): Translation?
+    fun createTranslation(projectId: String, createTranslation: CreateTranslation): Translation
 
-    fun createKey(projectId: String, createKey: CreateKey): Key?
+    fun createKey(projectId: String, createKey: CreateKey): Key
 
     fun deleteKey(projectId: String, keyId: String, branch: String? = null): Boolean
 
