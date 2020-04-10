@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/isadounikau/phrase-client/branch/master/graph/badge.svg)](https://codecov.io/gh/isadounikau/phrase-client)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.isadounikau/phrase-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.isadounikau/phrase-client/badge.svg)
 # Phrase.com Api Client
-Java/Kotlin Phrase API client
+Java/Kotlin Phrase API client. Library supports ETag caching, therefore **you can forget about Rate Limiting** exceptions problem
 
 ## What is this?
 This projects contain client to handle the API from [PhraseApp API v2](http://docs.phraseapp.com/api/v2/).
