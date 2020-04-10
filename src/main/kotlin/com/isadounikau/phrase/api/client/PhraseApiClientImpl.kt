@@ -1,14 +1,15 @@
 package com.isadounikau.phrase.api.client
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.net.HttpHeaders
 import com.google.common.net.MediaType
-import com.google.gson.JsonIOException
-import com.google.gson.JsonSyntaxException
 import com.isadounikau.phrase.api.client.model.CreateKey
 import com.isadounikau.phrase.api.client.model.CreatePhraseLocale
 import com.isadounikau.phrase.api.client.model.CreatePhraseProject
@@ -41,12 +42,14 @@ private val log = KotlinLogging.logger {}
 @Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
 class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApiClient, CacheETagApi {
 
-    private val client: PhraseApi
-    private val responseCache: Cache<CacheKey, Any> = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
-    private val eTagCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build<CacheKey, String>()
-//    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
-    private val ob = ObjectMapper().registerModule(KotlinModule())
+    constructor(authKey: String) : this(PhraseApiClientConfig(authKey = authKey))
 
+    constructor(url: String, authKey: String) : this(PhraseApiClientConfig(url = url, authKey = authKey))
+
+    private val client: PhraseApi
+    private val responseCache: Cache<CacheKey, Any>
+    private val eTagCache: Cache<CacheKey, String>
+    private val mapper: ObjectMapper
 
     init {
         client = Feign.builder()
@@ -54,6 +57,13 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             .encoder(JacksonEncoder())
             .target(PhraseApi::class.java, config.url)
 
+        mapper = ObjectMapper()
+            .registerModule(KotlinModule())
+            .registerModule(JavaTimeModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+
+        eTagCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
         timer(name = "eTagCache",
             daemon = true,
             initialDelay = config.cleanUpFareRate.toMillis(),
@@ -67,6 +77,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             }
         }
 
+        responseCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
         timer(name = "responseCache",
             daemon = true,
             initialDelay = config.cleanUpFareRate.toMillis(),
@@ -80,10 +91,6 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             }
         }
     }
-
-    constructor(url: String, authKey: String) : this(PhraseApiClientConfig(url = url, authKey = authKey))
-
-    constructor(authKey: String) : this(PhraseApiClientConfig(authKey = authKey))
 
     override fun projects(): PhraseProjects {
         val response = client.projects()
@@ -330,13 +337,10 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     private inline fun <reified T> getObject(response: Response): T {
         try {
-            val responseObject = ob.readValue<T>(response.body().asReader(StandardCharsets.UTF_8))
+            val responseObject = mapper.readValue<T>(response.body().asReader(StandardCharsets.UTF_8))
             log.debug { "Response object : $responseObject" }
             return responseObject
-        } catch (ex: JsonSyntaxException) {
-            log.warn { ex.message }
-            throw PhraseAppApiException("Error during parsing response", ex)
-        } catch (ex: JsonIOException) {
+        } catch (ex: Exception) {
             log.warn { ex.message }
             throw PhraseAppApiException("Error during parsing response", ex)
         }

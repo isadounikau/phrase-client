@@ -1,20 +1,20 @@
 package com.isadounikau.phrase.api.client.model
 
 import java.io.File
-import java.util.Date
+import java.time.Instant
 
-class Keys: ArrayList<Key>()
+typealias Keys = ArrayList<Key>
 
 data class Key(
     val id: String,
     val name: String,
     val description: String? = null,
-    val tags: ArrayList<String>? = null,
+    val tags: List<String>? = null,
     val nameHash: String? = null,
     val plural: String? = null,
     val dataType: String? = null,
-    val createdAt: Date? = null,
-    val updatedAt: Date? = null,
+    val createdAt: Instant? = null,
+    val updatedAt: Instant? = null,
     val namePlural: String? = null,
     val comments_count: String? = null,
     val maxCharactersAllowed: String? = null,
@@ -28,7 +28,7 @@ data class Key(
 
 data class CreateKey(
     val name: String,
-    val tags: ArrayList<String>? = null,
+    val tags: List<String>? = null,
     val description: String? = null,
     val branch: String? = null,
     val plural: Boolean? = null,

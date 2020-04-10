@@ -3,7 +3,7 @@ package com.isadounikau.phrase.api.client
 import com.isadounikau.phrase.api.client.model.PhraseProject
 import com.isadounikau.phrase.api.client.model.PhraseProjects
 import org.junit.Test
-import java.util.Date
+import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
@@ -18,16 +18,16 @@ class ProjectApiClientImplTest : AbstractTest() {
             id = "0dcf034088258abe79837e6100eab4a1",
             name = "project-1-name",
             mainFormat = "strings",
-            createdAt = Date(1376563519000),
-            updatedAt = Date(1585917726000)
+            createdAt = Instant.ofEpochSecond(1376563519),
+            updatedAt = Instant.ofEpochSecond(1585917726)
         ))
         expectedProjects.add(
             PhraseProject(
                 id = "911c3e878eb2df212aebe5ec09777fbb",
                 name = "project-2-name",
                 mainFormat = "strings",
-                createdAt = Date(1385454055000),
-                updatedAt = Date(1585920130000)
+                createdAt = Instant.ofEpochSecond(1385454055),
+                updatedAt = Instant.ofEpochSecond(1585920130)
             )
         )
 
@@ -50,8 +50,8 @@ class ProjectApiClientImplTest : AbstractTest() {
             sharesTranslationMemory = "false",
             projectImageUrl = "lenna.png",
             mainFormat = "",
-            createdAt = Date(1531919753000),
-            updatedAt = Date(1585901452000)
+            createdAt = Instant.ofEpochSecond(1531919753),
+            updatedAt = Instant.ofEpochSecond(1585901452)
         )
 
         //WHEN
@@ -72,8 +72,8 @@ class ProjectApiClientImplTest : AbstractTest() {
             sharesTranslationMemory = "false",
             projectImageUrl = "lenna.png",
             mainFormat = "",
-            createdAt = Date(1531919753000),
-            updatedAt = Date(1585901452000)
+            createdAt = Instant.ofEpochSecond(1531919753),
+            updatedAt = Instant.ofEpochSecond(1585901452)
         )
 
         //WHEN

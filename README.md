@@ -6,7 +6,7 @@ Java/Kotlin Phrase API client
 
 ## What is this?
 This projects contain client to handle the API from [PhraseApp API v2](http://docs.phraseapp.com/api/v2/).
-It's supposed to expose Phrase Core within the kotlin world.
+It's supposed to expose Phrase Core within the Java/Kotlin world.
 
 ## How to use it
 

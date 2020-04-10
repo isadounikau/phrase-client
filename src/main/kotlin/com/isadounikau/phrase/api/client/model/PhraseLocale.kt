@@ -1,6 +1,6 @@
 package com.isadounikau.phrase.api.client.model
 
-import java.util.Date
+import java.time.Instant
 
 data class CreatePhraseLocale(
     val name: String,
@@ -33,13 +33,13 @@ data class PhraseLocale(
     val unverifyNewTranslations: String? = null,
     val unverifyUpdatedTranslations: String? = null,
     val autotranslate: String? = null,
-    val createdAt: Date? = null,
-    val updatedAt: Date? = null
+    val createdAt: Instant? = null,
+    val updatedAt: Instant? = null
 )
 
-class PhraseLocales: ArrayList<PhraseLocale>()
+typealias PhraseLocales = ArrayList<PhraseLocale>
 
-class PhraseLocaleMessages: HashMap<String, Message>()
+typealias PhraseLocaleMessages = HashMap<String, Message>
 
 data class Message(
     val message: String,

@@ -1,6 +1,6 @@
 package com.isadounikau.phrase.api.client.model
 
-class Translations: ArrayList<Translation>()
+typealias Translations = ArrayList<Translation>
 
 data class Translation(
     val id: String,
