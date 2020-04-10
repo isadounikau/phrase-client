@@ -16,13 +16,10 @@ import com.isadounikau.phrase.api.client.model.CreatePhraseProject
 import com.isadounikau.phrase.api.client.model.CreateTranslation
 import com.isadounikau.phrase.api.client.model.DownloadPhraseLocaleProperties
 import com.isadounikau.phrase.api.client.model.Key
+import com.isadounikau.phrase.api.client.model.Message
 import com.isadounikau.phrase.api.client.model.PhraseLocale
-import com.isadounikau.phrase.api.client.model.PhraseLocaleMessages
-import com.isadounikau.phrase.api.client.model.PhraseLocales
 import com.isadounikau.phrase.api.client.model.PhraseProject
-import com.isadounikau.phrase.api.client.model.PhraseProjects
 import com.isadounikau.phrase.api.client.model.Translation
-import com.isadounikau.phrase.api.client.model.Translations
 import com.isadounikau.phrase.api.client.model.UpdatePhraseProject
 import com.isadounikau.phrase.api.client.utils.Constants.HS_BAD_REQUEST
 import com.isadounikau.phrase.api.client.utils.Constants.HS_NOT_MODIFIED
@@ -92,7 +89,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         }
     }
 
-    override fun projects(): PhraseProjects {
+    override fun projects(): List<PhraseProject> {
         val response = client.projects()
         log.debug { "Get projects" }
         val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects")
@@ -154,7 +151,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun locales(projectId: String, branch: String?): PhraseLocales {
+    override fun locales(projectId: String, branch: String?): List<PhraseLocale> {
         log.debug { "Get locales for the [$branch] branch of project [$projectId]" }
         val response = client.locales(projectId, branch)
 
@@ -184,7 +181,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): PhraseLocaleMessages {
+    override fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): Map<String, Message> {
         log.debug { "Download locale [$localeId] for project [$projectId]" }
 
         val queryMap = buildQueryMap(
@@ -222,7 +219,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         client.deleteLocale(projectId, localeId, branch)
     }
 
-    override fun translations(project: PhraseProject, locale: PhraseLocale, branch: String?): Translations {
+    override fun translations(project: PhraseProject, locale: PhraseLocale, branch: String?): List<Translation> {
         log.debug { "Get translations for locale [${locale.id}] for [$branch] branch of project [${project.id}]" }
         val response = client.translations(project.id, locale.id, branch)
 

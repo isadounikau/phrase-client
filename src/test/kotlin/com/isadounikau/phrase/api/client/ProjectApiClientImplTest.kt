@@ -1,7 +1,6 @@
 package com.isadounikau.phrase.api.client
 
 import com.isadounikau.phrase.api.client.model.PhraseProject
-import com.isadounikau.phrase.api.client.model.PhraseProjects
 import org.junit.Test
 import java.time.Instant
 import kotlin.test.assertEquals
@@ -13,23 +12,19 @@ class ProjectApiClientImplTest : AbstractTest() {
     @Test
     fun `get projects when projects exist then return projects`() {
         //GIVEN an api
-        val expectedProjects = PhraseProjects()
-        expectedProjects.add(PhraseProject(
+        val expectedProjects = listOf(PhraseProject(
             id = "0dcf034088258abe79837e6100eab4a1",
             name = "project-1-name",
             mainFormat = "strings",
             createdAt = Instant.ofEpochSecond(1376563519),
             updatedAt = Instant.ofEpochSecond(1585917726)
+        ), PhraseProject(
+            id = "911c3e878eb2df212aebe5ec09777fbb",
+            name = "project-2-name",
+            mainFormat = "strings",
+            createdAt = Instant.ofEpochSecond(1385454055),
+            updatedAt = Instant.ofEpochSecond(1585920130)
         ))
-        expectedProjects.add(
-            PhraseProject(
-                id = "911c3e878eb2df212aebe5ec09777fbb",
-                name = "project-2-name",
-                mainFormat = "strings",
-                createdAt = Instant.ofEpochSecond(1385454055),
-                updatedAt = Instant.ofEpochSecond(1585920130)
-            )
-        )
 
         //WHEN
         val actualProjects = source.projects()

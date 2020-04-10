@@ -15,8 +15,6 @@ data class PhraseProject(
     val updatedAt: Instant? = null
 )
 
-typealias PhraseProjects = ArrayList<PhraseProject>
-
 data class CreatePhraseProject(
     val name: String,
     val mainFormat: String? = null,
