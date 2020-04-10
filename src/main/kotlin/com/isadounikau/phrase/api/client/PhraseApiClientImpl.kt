@@ -1,11 +1,12 @@
 package com.isadounikau.phrase.api.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.net.HttpHeaders
 import com.google.common.net.MediaType
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.isadounikau.phrase.api.client.model.CreateKey
@@ -30,8 +31,7 @@ import feign.Feign
 import feign.Request
 import feign.RequestInterceptor
 import feign.Response
-import feign.form.FormEncoder
-import feign.gson.GsonEncoder
+import feign.jackson.JacksonEncoder
 import mu.KotlinLogging
 import java.nio.charset.StandardCharsets
 import kotlin.concurrent.timer
@@ -44,12 +44,14 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
     private val client: PhraseApi
     private val responseCache: Cache<CacheKey, Any> = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
     private val eTagCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build<CacheKey, String>()
-    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+//    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+    private val ob = ObjectMapper().registerModule(KotlinModule())
+
 
     init {
         client = Feign.builder()
             .requestInterceptor(getInterceptor())
-            .encoder(FormEncoder(GsonEncoder()))
+            .encoder(JacksonEncoder())
             .target(PhraseApi::class.java, config.url)
 
         timer(name = "eTagCache",
@@ -328,7 +330,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     private inline fun <reified T> getObject(response: Response): T {
         try {
-            val responseObject = gson.fromJson(response.body().asReader(StandardCharsets.UTF_8), T::class.java)
+            val responseObject = ob.readValue<T>(response.body().asReader(StandardCharsets.UTF_8))
             log.debug { "Response object : $responseObject" }
             return responseObject
         } catch (ex: JsonSyntaxException) {
