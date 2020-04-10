@@ -37,9 +37,9 @@ data class PhraseLocale(
     val updatedAt: Date? = null
 )
 
-typealias PhraseLocales = List<PhraseLocale>
+class PhraseLocales: ArrayList<PhraseLocale>()
 
-typealias PhraseLocaleMessages = Map<String, Message>
+class PhraseLocaleMessages: HashMap<String, Message>()
 
 data class Message(
     val message: String,
