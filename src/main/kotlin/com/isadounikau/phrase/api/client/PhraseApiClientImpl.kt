@@ -83,7 +83,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     constructor(authKey: String) : this(PhraseApiClientConfig(authKey = authKey))
 
-    override fun projects(): PhraseProjects? {
+    override fun projects(): PhraseProjects {
         val response = client.projects()
         log.debug { "Get projects" }
         val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects")
@@ -91,7 +91,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun project(projectId: String): PhraseProject? {
+    override fun project(projectId: String): PhraseProject {
         val response = client.project(projectId)
         log.debug { "Get project [$projectId]" }
         val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects/$projectId")
@@ -106,7 +106,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return response.status() == HS_NO_CONTENT
     }
 
-    override fun createProject(phraseProject: CreatePhraseProject): PhraseProject? {
+    override fun createProject(phraseProject: CreatePhraseProject): PhraseProject {
         log.debug { "Create project [$phraseProject]" }
         val response = client.createProject(
             phraseProject.name,
@@ -120,7 +120,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun updateProject(projectId: String, phraseProject: UpdatePhraseProject): PhraseProject? {
+    override fun updateProject(projectId: String, phraseProject: UpdatePhraseProject): PhraseProject {
         log.debug { "Update project [$phraseProject]" }
         val response = client.updateProject(
             projectId,
@@ -135,7 +135,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun locale(projectId: String, localeId: String, branch: String?): PhraseLocale? {
+    override fun locale(projectId: String, localeId: String, branch: String?): PhraseLocale {
         log.debug { "Get locale [$localeId] for the [$branch] branch of project [$projectId]" }
         val queryMap = buildQueryMap("branch" to branch)
         val response = client.locale(projectId, localeId, queryMap)
@@ -145,7 +145,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun locales(projectId: String, branch: String?): PhraseLocales? {
+    override fun locales(projectId: String, branch: String?): PhraseLocales {
         log.debug { "Get locales for the [$branch] branch of project [$projectId]" }
         val response = client.locales(projectId, branch)
 
@@ -155,7 +155,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun createLocale(projectId: String, locale: CreatePhraseLocale): PhraseLocale? {
+    override fun createLocale(projectId: String, locale: CreatePhraseLocale): PhraseLocale {
         log.debug { "Create locale [$locale] for project [$projectId]" }
         val response = client.createLocale(
             projectId,
@@ -175,7 +175,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): PhraseLocaleMessages? {
+    override fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): PhraseLocaleMessages {
         log.debug { "Download locale [$localeId] for project [$projectId]" }
 
         val queryMap = buildQueryMap(
@@ -191,7 +191,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): ByteArray? {
+    override fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): ByteArray {
         log.debug { "Download locale [$localeId] branch of project [$projectId]" }
 
         val queryMap = buildQueryMap(
@@ -213,7 +213,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         client.deleteLocale(projectId, localeId, branch)
     }
 
-    override fun translations(project: PhraseProject, locale: PhraseLocale, branch: String?): Translations? {
+    override fun translations(project: PhraseProject, locale: PhraseLocale, branch: String?): Translations {
         log.debug { "Get translations for locale [${locale.id}] for [$branch] branch of project [${project.id}]" }
         val response = client.translations(project.id, locale.id, branch)
 
@@ -223,7 +223,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun createTranslation(projectId: String, createTranslation: CreateTranslation): Translation? {
+    override fun createTranslation(projectId: String, createTranslation: CreateTranslation): Translation {
         log.debug {
             "Creating the translation [${createTranslation.content}] for " +
                 "locale [${createTranslation.localeId}] for " +
@@ -238,7 +238,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return processResponse(key, response)
     }
 
-    override fun createKey(projectId: String, createKey: CreateKey): Key? {
+    override fun createKey(projectId: String, createKey: CreateKey): Key {
         log.debug { "Creating keys [${createKey.name}] for [${createKey.branch}] branch of project [$projectId]" }
         val response = client.createKey(
             projectId,
@@ -276,7 +276,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     override fun getETag(key: CacheKey): String? = eTagCache.getIfPresent(key)
 
-    private inline fun <reified T> processResponse(key: CacheKey, response: Response): T? {
+    private inline fun <reified T> processResponse(key: CacheKey, response: Response): T {
         log.debug { "Response : status [${response.status()}] \n headers [${response.headers()}]" }
 
         if (response.status() !in HS_OK..HS_BAD_REQUEST) {
@@ -340,12 +340,10 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         }
     }
 
-    private fun getETag(response: Response): String? {
-        val eTagHeader = response.headers()
-            .entries
-            .find { it.key.equals(HttpHeaders.ETAG, true) }
-        return eTagHeader?.value?.first()
-    }
+    private fun getETag(response: Response): String? = response.headers()
+        .entries
+        .find { it.key.equals(HttpHeaders.ETAG, true) }
+        ?.value?.first()
 
     private fun buildQueryMap(vararg entries: Pair<String, Any?>) =
         entries.filter { it.second != null }.associate { (k, v) -> k to listOf(v) }
@@ -357,7 +355,9 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             request.url().substringBefore('?'),
             request.requestTemplate().queries()
         )
-        template.header(HttpHeaders.IF_NONE_MATCH, getETag(key))
+        getETag(key)?.also {
+            template.header(HttpHeaders.IF_NONE_MATCH, it)
+        }
         template.header(HttpHeaders.AUTHORIZATION, "token ${config.authKey}")
     }
 }

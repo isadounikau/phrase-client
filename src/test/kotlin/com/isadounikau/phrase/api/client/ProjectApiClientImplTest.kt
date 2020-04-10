@@ -2,6 +2,7 @@ package com.isadounikau.phrase.api.client
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
 class ProjectApiClientImplTest: AbstractTest() {
@@ -45,14 +46,21 @@ class ProjectApiClientImplTest: AbstractTest() {
         assertEquals(projectOne, projectTwo)
     }
 
-    @Test(expected = PhraseAppApiException::class)
     fun `get project when project not exist then throw exception`() {
         //GIVEN an api
         val projectId = "NOT_FOUND"
 
         //WHEN
-        source.project(projectId)
+        val ex = assertFailsWith<PhraseAppApiException> { source.project(projectId) }
 
         //THEN exception
+        assertNotNull(ex)
+        assertEquals(
+            """
+            |Code [404] : {
+            |  "message": "Not Found",
+            |  "documentation_url": "https://developers.phrase.com/api/"
+            |}
+            """.trimMargin(), ex.message)
     }
 }
