@@ -1,4 +1,4 @@
-package com.isadounikau.phrase.api.client.model
+package com.isadounikau.phrase.api.client.models
 
 import java.io.File
 import java.time.Instant

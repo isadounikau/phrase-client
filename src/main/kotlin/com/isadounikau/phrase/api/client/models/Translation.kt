@@ -1,4 +1,4 @@
-package com.isadounikau.phrase.api.client.model
+package com.isadounikau.phrase.api.client.models
 
 data class Translation(
     val id: String,

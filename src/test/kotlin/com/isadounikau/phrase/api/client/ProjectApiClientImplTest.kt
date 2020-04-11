@@ -1,6 +1,6 @@
 package com.isadounikau.phrase.api.client
 
-import com.isadounikau.phrase.api.client.model.PhraseProject
+import com.isadounikau.phrase.api.client.models.PhraseProject
 import org.junit.Test
 import java.time.Instant
 import kotlin.test.assertEquals

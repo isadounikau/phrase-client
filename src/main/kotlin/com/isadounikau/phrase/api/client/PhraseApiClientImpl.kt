@@ -10,17 +10,21 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.net.HttpHeaders
 import com.google.common.net.MediaType
-import com.isadounikau.phrase.api.client.model.CreateKey
-import com.isadounikau.phrase.api.client.model.CreatePhraseLocale
-import com.isadounikau.phrase.api.client.model.CreatePhraseProject
-import com.isadounikau.phrase.api.client.model.CreateTranslation
-import com.isadounikau.phrase.api.client.model.DownloadPhraseLocaleProperties
-import com.isadounikau.phrase.api.client.model.Key
-import com.isadounikau.phrase.api.client.model.Message
-import com.isadounikau.phrase.api.client.model.PhraseLocale
-import com.isadounikau.phrase.api.client.model.PhraseProject
-import com.isadounikau.phrase.api.client.model.Translation
-import com.isadounikau.phrase.api.client.model.UpdatePhraseProject
+import com.isadounikau.phrase.api.client.models.CreateKey
+import com.isadounikau.phrase.api.client.models.CreatePhraseLocale
+import com.isadounikau.phrase.api.client.models.CreatePhraseProject
+import com.isadounikau.phrase.api.client.models.CreateTranslation
+import com.isadounikau.phrase.api.client.models.DownloadPhraseLocaleProperties
+import com.isadounikau.phrase.api.client.models.Key
+import com.isadounikau.phrase.api.client.models.PhraseLocale
+import com.isadounikau.phrase.api.client.models.PhraseProject
+import com.isadounikau.phrase.api.client.models.Translation
+import com.isadounikau.phrase.api.client.models.UpdatePhraseProject
+import com.isadounikau.phrase.api.client.models.downloads.ByteArrayResponse
+import com.isadounikau.phrase.api.client.models.downloads.DownloadResponse
+import com.isadounikau.phrase.api.client.models.downloads.FileFormat
+import com.isadounikau.phrase.api.client.models.downloads.Message
+import com.isadounikau.phrase.api.client.models.downloads.MessagesResponse
 import com.isadounikau.phrase.api.client.utils.Constants.HS_BAD_REQUEST
 import com.isadounikau.phrase.api.client.utils.Constants.HS_NOT_MODIFIED
 import com.isadounikau.phrase.api.client.utils.Constants.HS_NO_CONTENT
@@ -179,6 +183,25 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         val key = CacheKey(Request.HttpMethod.POST, "/api/v2/projects/$projectId/locales")
 
         return processResponse(key, response)
+    }
+
+    override fun downloadLocale(projectId: String, localeId: String, fileFormat: FileFormat, properties: DownloadPhraseLocaleProperties?): DownloadResponse {
+        log.debug { "Download locale [$localeId] for project [$projectId]" }
+
+        val queryMap = buildQueryMap(
+            "file_format" to fileFormat.apiName,
+            "format_options%5Bescape_single_quotes%5D" to properties?.escapeSingleQuotes,
+            "branch" to properties?.branch,
+            "fallback_locale_id" to properties?.fallbackLocaleId,
+            "include_empty_translations" to properties?.includeEmptyTranslations
+        )
+        val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects/$projectId/locales/download", queryMap)
+
+        val response = client.downloadLocale(projectId, localeId, queryMap)
+        return when (fileFormat) {
+            FileFormat.JSON -> MessagesResponse(processResponse(key, response))
+            FileFormat.JAVA_PROPERTY -> ByteArrayResponse(processResponse(key, response))
+        }
     }
 
     override fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): Map<String, Message> {
