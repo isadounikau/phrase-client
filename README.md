@@ -32,6 +32,8 @@ val phraseApiClient = PhraseApiClientImpl(config)
   * Get locale by id
   * Delete locale
   * Download locale translations
+    * [JOSN](https://help.phrase.com/help/chrome-json-messages)
+    * [Java Proerties](https://help.phrase.com/help/java-properties)
   
 * Translation
   * Create translation
