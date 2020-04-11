@@ -41,3 +41,8 @@ val phraseApiClient = PhraseApiClientImpl(config)
   * Search key
   * Delete key
 
+## TODO
+* Increase test coverage
+* Increase supported APIs
+* Migrate from Maven to Gradle 
+* *Optional* introduce kotlin-multiplatform 

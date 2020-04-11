@@ -5,5 +5,7 @@ package com.isadounikau.phrase.api.client.models.downloads
 * */
 enum class FileFormat(val apiName: String) {
     JSON("json"),
-    JAVA_PROPERTY("properties")
+    JAVA_PROPERTY("properties"),
+    ANDROID_XML("xml"),
+    IOS_STRINGS("strings")
 }

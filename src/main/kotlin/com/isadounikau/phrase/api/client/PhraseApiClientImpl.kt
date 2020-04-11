@@ -35,12 +35,13 @@ import feign.RequestInterceptor
 import feign.Response
 import feign.jackson.JacksonEncoder
 import mu.KotlinLogging
+import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import kotlin.concurrent.timer
 
 private val log = KotlinLogging.logger {}
 
-@Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught")
+@Suppress("MaxLineLength", "TooManyFunctions", "TooGenericExceptionCaught", "UnstableApiUsage")
 class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApiClient, CacheETagApi {
 
     constructor(authKey: String) : this(PhraseApiClientConfig(authKey = authKey))
@@ -198,9 +199,22 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects/$projectId/locales/download", queryMap)
 
         val response = client.downloadLocale(projectId, localeId, queryMap)
+
+        val charset = response.headers()
+            .asSequence()
+            .firstOrNull<Map.Entry<String, MutableCollection<String>>> { HttpHeaders.CONTENT_TYPE.equals(it.key, true) }
+            ?.value
+            ?.first()
+            ?.let { MediaType.parse(it) }
+            ?.charset()
+            ?.or(StandardCharsets.UTF_8)
+            ?: throw PhraseAppApiException("${HttpHeaders.CONTENT_TYPE} is NULL")
+
         return when (fileFormat) {
             FileFormat.JSON -> MessagesResponse(processResponse(key, response))
-            FileFormat.JAVA_PROPERTY -> ByteArrayResponse(processResponse(key, response))
+            FileFormat.JAVA_PROPERTY -> ByteArrayResponse(processResponse(key, response), charset)
+            FileFormat.ANDROID_XML -> ByteArrayResponse(processResponse(key, response), charset)
+            FileFormat.IOS_STRINGS -> ByteArrayResponse(processResponse(key, response), charset)
         }
     }
 
@@ -321,43 +335,48 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             throw PhraseAppApiException(response.status(), message)
         }
 
-        return if (response.status() == HS_NOT_MODIFIED) {
+        if (response.status() == HS_NOT_MODIFIED) {
             val cacheResponse = responseCache.getIfPresent(key) as T
             log.debug { "Cached response : $cacheResponse" }
-            cacheResponse
+            return cacheResponse
         } else {
-
             val contentType = response.headers()
                 .asSequence()
-                .firstOrNull { HttpHeaders.CONTENT_TYPE.equals(it.key, true) }
+                .firstOrNull<Map.Entry<String, MutableCollection<String>>> { HttpHeaders.CONTENT_TYPE.equals(it.key, true) }
                 ?.value
                 ?.first() ?: throw PhraseAppApiException("Content type is NULL")
 
+            val responseBody = response.body()
             val mediaType = MediaType.parse(contentType)
-            val responseObject = when (mediaType.subtype()) {
-                MediaType.JSON_UTF_8.subtype() -> {
-                    getObject(response)
-                }
-                MediaType.OCTET_STREAM.subtype() -> {
-                    response.body().asInputStream().readBytes() as T
-                }
-                else -> {
-                    throw PhraseAppApiException("Content Type $contentType is not supported")
-                }
-            }
-
-            getETag(response)?.also {
+            val responseObject = processResponse(mediaType, responseBody) as T
+            getETag(response)?.also { eTag ->
                 responseCache.put(key, responseObject)
-                putETag(key, it)
+                putETag(key, eTag)
             }
-
-            responseObject
+            return responseObject
         }
     }
 
-    private inline fun <reified T> getObject(response: Response): T {
+    private inline fun <reified T> processResponse(mediaType: MediaType, responseBody: Response.Body): T {
+        val charset = mediaType.charset().or(StandardCharsets.UTF_8)
+        return when (mediaType.withoutParameters()) {
+            MediaType.JSON_UTF_8.withoutParameters() -> {
+                getObject(responseBody, charset)
+            }
+            MediaType.XML_UTF_8.withoutParameters(),
+            MediaType.OCTET_STREAM.withoutParameters(),
+            MediaType.PLAIN_TEXT_UTF_8.withoutParameters() -> {
+                responseBody.asInputStream().readBytes() as T
+            }
+            else -> {
+                throw PhraseAppApiException("Content Type $mediaType is not supported")
+            }
+        }
+    }
+
+    private inline fun <reified T> getObject(responseBody: Response.Body, charset: Charset): T {
         try {
-            val responseObject = mapper.readValue<T>(response.body().asReader(StandardCharsets.UTF_8))
+            val responseObject = mapper.readValue<T>(responseBody.asReader(charset))
             log.debug { "Response object : $responseObject" }
             return responseObject
         } catch (ex: Exception) {

@@ -1,0 +1,14 @@
+"app.error.message" = "Hi ha hagut un error. Si us plau, intenta-ho de nou.";
+
+"companyInformation.companyName.label" = "Nom d'empresa";
+
+"companyInformation.streetName.label" = "Adreça";
+
+"companyInformation.streetNumber.label" = "Número de carrer";
+
+"companyInformation.zipCode.label" = "Codi postal";
+
+"contactInformation.emailAddress.company.h2" = "T'enviarem la teva documentació per e-mail a aquesta adreça.";
+
+/* Applies to all countries except UK and Ireland */
+"contactInformation.emailAddress.driver.h2" = "Necesites un e-mail per accedir a l'App.";
