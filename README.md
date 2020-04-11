@@ -32,8 +32,10 @@ val phraseApiClient = PhraseApiClientImpl(config)
   * Get locale by id
   * Delete locale
   * Download locale translations
-    * [JSON](https://help.phrase.com/help/chrome-json-messages)
-    * [Java Proerties](https://help.phrase.com/help/java-properties)
+    * [JSON](https://phrase.com/docs/guides/formats/chrome-json/)
+    * [Java Proerties](https://phrase.com/docs/guides/formats/java-properties/)
+    * [Android XML](https://phrase.com/docs/guides/formats/android-xml/)
+    * [IOS STRINGS](https://phrase.com/docs/guides/formats/ios-localizable-strings/)
   
 * Translation
   * Create translation
@@ -43,3 +45,8 @@ val phraseApiClient = PhraseApiClientImpl(config)
   * Search key
   * Delete key
 
+## TODO
+* Increase test coverage
+* Increase supported APIs
+* Migrate from Maven to Gradle 
+* *Optional* introduce kotlin-multiplatform 

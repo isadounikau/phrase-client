@@ -1,4 +1,4 @@
-package com.isadounikau.phrase.api.client.model
+package com.isadounikau.phrase.api.client.models
 
 import java.io.File
 import java.time.Instant
@@ -14,8 +14,6 @@ data class PhraseProject(
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
 )
-
-typealias PhraseProjects = ArrayList<PhraseProject>
 
 data class CreatePhraseProject(
     val name: String,

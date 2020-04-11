@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="app.error.message">Hi ha hagut un error. Si us plau, intenta-ho de nou.</string>
+    <string name="companyInformation.zipCode.label">Codi postal</string>
+    <string name="contactInformation.emailAddress.company.h2">T\'enviarem la teva documentació per e-mail a aquesta adreça.</string>
+    <!-- Applies to all countries except UK and Ireland -->
+    <string name="contactInformation.emailAddress.driver.h2">Necesites un e-mail per accedir a l\'App.</string>
+</resources>

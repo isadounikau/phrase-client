@@ -1,4 +1,4 @@
-package com.isadounikau.phrase.api.client.model
+package com.isadounikau.phrase.api.client.models
 
 import java.time.Instant
 
@@ -35,13 +35,4 @@ data class PhraseLocale(
     val autotranslate: String? = null,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
-)
-
-typealias PhraseLocales = ArrayList<PhraseLocale>
-
-typealias PhraseLocaleMessages = HashMap<String, Message>
-
-data class Message(
-    val message: String,
-    val description: String? = null
 )

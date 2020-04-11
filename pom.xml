@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -32,15 +32,15 @@
         <java.version>1.8</java.version>
         <scm.connection>scm:git@github.com:isadounikau/phrase-client.git</scm.connection>
         <scm.url>https://github.com/isadounikau/phrase-client</scm.url>
-        <kotlin.version>1.3.61</kotlin.version>
+        <kotlin.version>1.3.71</kotlin.version>
 
         <feign.version>10.9</feign.version>
-        <feign-form.version>3.3.0</feign-form.version>
+        <feign-form.version>3.8.0</feign-form.version>
         <guava.version>28.2-jre</guava.version>
         <wiremock-jre8.version>2.26.3</wiremock-jre8.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j.version>1.7.30</slf4j.version>
         <kotlin-logging.version>1.7.9</kotlin-logging.version>
-        <jackson-module.version>2.10.1</jackson-module.version>
+        <jackson-module.version>2.10.3</jackson-module.version>
     </properties>
 
     <scm>
@@ -98,12 +98,6 @@
 
         <!--Test-->
         <dependency>
-            <groupId>io.mockk</groupId>
-            <artifactId>mockk</artifactId>
-            <version>1.9.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit</artifactId>
             <version>${kotlin.version}</version>
@@ -128,7 +122,6 @@
             <artifactId>kotlin-logging</artifactId>
             <version>${kotlin-logging.version}</version>
         </dependency>
-
 
     </dependencies>
 
