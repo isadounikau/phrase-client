@@ -27,12 +27,8 @@ data class PhraseLocale(
     val name: String,
     val code: String,
     val default: Boolean? = null,
-    val mail: Boolean? = null,
+    val main: Boolean? = null,
     val rtl: Boolean? = null,
-    val sourceLocaleId: String? = null,
-    val unverifyNewTranslations: String? = null,
-    val unverifyUpdatedTranslations: String? = null,
-    val autotranslate: String? = null,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
 )
