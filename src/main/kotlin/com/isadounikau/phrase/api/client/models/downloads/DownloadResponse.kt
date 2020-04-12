@@ -33,6 +33,6 @@ data class ByteArrayResponse(
 typealias Messages = Map<String, Message>
 
 data class Message(
-    val message: String,
+    val message: String?,
     val description: String? = null
 )

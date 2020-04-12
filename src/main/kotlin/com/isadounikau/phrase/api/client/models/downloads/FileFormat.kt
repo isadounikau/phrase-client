@@ -7,5 +7,6 @@ enum class FileFormat(val apiName: String) {
     JSON("json"),
     JAVA_PROPERTY("properties"),
     ANDROID_XML("xml"),
-    IOS_STRINGS("strings")
+    IOS_STRINGS("strings"),
+    CSV("csv")
 }

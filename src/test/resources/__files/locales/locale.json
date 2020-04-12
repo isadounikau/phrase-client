@@ -1,19 +1,29 @@
 {
-  "id": "943e69b51641b00d6acbb638f62f4541",
-  "name": "name",
-  "code": "ca-ES",
-  "slug": "slug",
-  "main_format": "",
-  "shares_translation_memory": false,
-  "project_image_url": "lenna.png",
-  "created_at": "2018-07-18T13:15:53Z",
-  "updated_at": "2020-04-03T08:10:52Z",
-  "account": {
-    "id": "93614b48",
-    "name": "name",
-    "slug": "slug",
-    "company": "company",
-    "created_at": "2013-08-15T10:31:31Z",
-    "updated_at": "2020-04-07T15:23:52Z"
+  "id": "a4ca9b45e8721d6636be8e8ba40a90b3",
+  "name": "de",
+  "code": "de-DE",
+  "default": true,
+  "main": false,
+  "rtl": false,
+  "plural_forms": [
+    "zero",
+    "one",
+    "other"
+  ],
+  "source_locale": {
+    "id": "abcd1234cdef1234abcd1234cdef1234",
+    "name": "en",
+    "code": "en-GB"
+  },
+  "created_at": "2015-01-28T09:52:53Z",
+  "updated_at": "2015-01-28T09:52:53Z",
+  "statistics": {
+    "keys_total_count": 2120,
+    "keys_untranslated_count": 100,
+    "words_total_count": 3102102,
+    "translations_completed_count": 1920,
+    "translations_unverified_count": 32,
+    "unverified_words_count": 129,
+    "missing_words_count": 3920
   }
 }

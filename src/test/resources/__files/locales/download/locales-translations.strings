@@ -1,14 +1,26 @@
-"app.error.message" = "Hi ha hagut un error. Si us plau, intenta-ho de nou.";
+"boolean_key" = "--- true\n";
 
-"companyInformation.companyName.label" = "Nom d'empresa";
+"empty_string_translation" = "";
 
-"companyInformation.streetName.label" = "Adreça";
+/* This is the amazing description for this key! */
+"key_with_description" = "Check it out! This key has a description! (At least in some formats)";
 
-"companyInformation.streetNumber.label" = "Número de carrer";
+"key_with_line-break" = "This translations contains\na line-break.";
 
-"companyInformation.zipCode.label" = "Codi postal";
+"nested.deeply.key" = "Wow, this key is nested even deeper.";
 
-"contactInformation.emailAddress.company.h2" = "T'enviarem la teva documentació per e-mail a aquesta adreça.";
+"nested.key" = "This key is nested inside a namespace.";
 
-/* Applies to all countries except UK and Ireland */
-"contactInformation.emailAddress.driver.h2" = "Necesites un e-mail per accedir a l'App.";
+"null_translation" = "";
+
+"pluralized_key.one" = "Only one pluralization found.";
+
+"pluralized_key.other" = "Wow, you have %s pluralizations!";
+
+"pluralized_key.zero" = "You have no pluralization.";
+
+"sample_collection" = "---\n- first item\n- second item\n- third item\n";
+
+"simple_key" = "Just a simple key with a simple message.";
+
+"unverified_key" = "This translation is not yet verified and waits for it. (In some formats we also export this status)";
