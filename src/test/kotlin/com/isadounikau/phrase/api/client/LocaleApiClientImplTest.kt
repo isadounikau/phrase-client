@@ -43,6 +43,12 @@ class LocaleApiClientImplTest : AbstractTest() {
 
         //THEN
         assertNotNull(actualLocale)
+        assertEquals(expectedLocale.id, actualLocale.id)
+        assertEquals(expectedLocale.name, actualLocale.name)
+        assertEquals(expectedLocale.code, actualLocale.code)
+        assertEquals(expectedLocale.default, actualLocale.default)
+        assertEquals(expectedLocale.main, actualLocale.main)
+        assertEquals(expectedLocale.rtl, actualLocale.rtl)
         assertEquals(expectedLocale, actualLocale)
     }
 
