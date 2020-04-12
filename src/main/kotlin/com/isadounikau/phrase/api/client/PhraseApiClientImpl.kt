@@ -215,40 +215,16 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             FileFormat.JAVA_PROPERTY -> ByteArrayResponse(processResponse(key, response), charset)
             FileFormat.ANDROID_XML -> ByteArrayResponse(processResponse(key, response), charset)
             FileFormat.IOS_STRINGS -> ByteArrayResponse(processResponse(key, response), charset)
+            FileFormat.CSV -> ByteArrayResponse(processResponse(key, response), charset)
         }
     }
 
     override fun downloadLocale(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): Map<String, Message> {
-        log.debug { "Download locale [$localeId] for project [$projectId]" }
-
-        val queryMap = buildQueryMap(
-            "file_format" to "json",
-            "format_options%5Bescape_single_quotes%5D" to properties?.escapeSingleQuotes,
-            "branch" to properties?.branch,
-            "fallback_locale_id" to properties?.fallbackLocaleId,
-            "include_empty_translations" to properties?.includeEmptyTranslations
-        )
-        val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects/$projectId/locales/download", queryMap)
-
-        val response = client.downloadLocale(projectId, localeId, queryMap)
-        return processResponse(key, response)
+        return (downloadLocale(projectId, localeId, FileFormat.JSON, properties) as MessagesResponse).response
     }
 
     override fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties?): ByteArray {
-        log.debug { "Download locale [$localeId] branch of project [$projectId]" }
-
-        val queryMap = buildQueryMap(
-            "file_format" to "properties",
-            "format_options%5Bescape_single_quotes%5D" to properties?.escapeSingleQuotes,
-            "branch" to properties?.branch,
-            "fallback_locale_id" to properties?.fallbackLocaleId,
-            "include_empty_translations" to properties?.includeEmptyTranslations
-        )
-        val key = CacheKey(Request.HttpMethod.GET, "/api/v2/projects/$projectId/locales/download", queryMap)
-
-        val response = client.downloadLocale(projectId, localeId, queryMap)
-
-        return processResponse(key, response)
+        return (downloadLocale(projectId, localeId, FileFormat.JAVA_PROPERTY, properties) as ByteArrayResponse).response
     }
 
     override fun deleteLocale(projectId: String, localeId: String, branch: String?) {
@@ -363,6 +339,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             MediaType.JSON_UTF_8.withoutParameters() -> {
                 getObject(responseBody, charset)
             }
+            MediaType.CSV_UTF_8.withoutParameters(),
             MediaType.XML_UTF_8.withoutParameters(),
             MediaType.OCTET_STREAM.withoutParameters(),
             MediaType.PLAIN_TEXT_UTF_8.withoutParameters() -> {

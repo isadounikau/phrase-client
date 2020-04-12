@@ -36,6 +36,7 @@ val phraseApiClient = PhraseApiClientImpl(config)
     * [Java Proerties](https://phrase.com/docs/guides/formats/java-properties/)
     * [Android XML](https://phrase.com/docs/guides/formats/android-xml/)
     * [iOS Strings](https://phrase.com/docs/guides/formats/ios-localizable-strings/)
+    * [CSV](https://phrase.com/docs/guides/formats/csv/)
   
 * Translation
   * Create translation

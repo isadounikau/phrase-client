@@ -1,24 +1,42 @@
 {
-  "app.error.message": {
-    "message": "Hi ha hagut un error. Si us plau, intenta-ho de nou."
+  "boolean_key": {
+    "message": "--- true\n"
   },
-  "companyInformation.companyName.label": {
-    "message": "Nom d'empresa"
+  "empty_string_translation": {
+    "message": ""
   },
-  "companyInformation.streetName.label": {
-    "message": "Adreça"
+  "key_with_description": {
+    "message": "Check it out! This key has a description! (At least in some formats)",
+    "description": "This is the amazing description for this key!"
   },
-  "companyInformation.streetNumber.label": {
-    "message": "Número de carrer"
+  "key_with_line-break": {
+    "message": "This translations contains\na line-break."
   },
-  "companyInformation.zipCode.label": {
-    "message": "Codi postal"
+  "nested.deeply.key": {
+    "message": "Wow, this key is nested even deeper."
   },
-  "contactInformation.emailAddress.company.h2": {
-    "message": "T'enviarem la teva documentació per e-mail a aquesta adreça."
+  "nested.key": {
+    "message": "This key is nested inside a namespace."
   },
-  "contactInformation.emailAddress.driver.h2": {
-    "message": "Necesites un e-mail per accedir a l'App.",
-    "description": "Applies to all countries except UK and Ireland"
+  "null_translation": {
+    "message": null
+  },
+  "pluralized_key.one": {
+    "message": "Only one pluralization found."
+  },
+  "pluralized_key.other": {
+    "message": "Wow, you have %s pluralizations!"
+  },
+  "pluralized_key.zero": {
+    "message": "You have no pluralization."
+  },
+  "sample_collection": {
+    "message": "---\n- first item\n- second item\n- third item\n"
+  },
+  "simple_key": {
+    "message": "Just a simple key with a simple message."
+  },
+  "unverified_key": {
+    "message": "This translation is not yet verified and waits for it. (In some formats we also export this status)"
   }
 }

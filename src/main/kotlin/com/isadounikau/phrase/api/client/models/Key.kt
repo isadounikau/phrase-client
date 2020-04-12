@@ -14,7 +14,7 @@ data class Key(
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null,
     val namePlural: String? = null,
-    val comments_count: String? = null,
+    val commentsСount: String? = null,
     val maxCharactersAllowed: String? = null,
     val screenshotUrl: String? = null,
     val unformatted: String? = null,
