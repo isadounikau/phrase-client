@@ -54,6 +54,15 @@ class ProjectApiClientImplTest : AbstractTest() {
 
         //THEN
         assertNotNull(actualProject)
+        assertEquals(excretedProject.id, actualProject.id)
+        assertEquals(excretedProject.name, actualProject.name)
+        assertEquals(excretedProject.accountId, actualProject.accountId)
+        assertEquals(excretedProject.sharesTranslationMemory, actualProject.sharesTranslationMemory)
+        assertEquals(excretedProject.projectImageUrl, actualProject.projectImageUrl)
+        assertEquals(excretedProject.mainFormat, actualProject.mainFormat)
+        assertEquals(excretedProject.createdAt, actualProject.createdAt)
+        assertEquals(excretedProject.updatedAt, actualProject.updatedAt)
+
         assertEquals(excretedProject, actualProject)
     }
 
