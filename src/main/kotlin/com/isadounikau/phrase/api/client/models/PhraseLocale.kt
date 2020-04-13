@@ -7,7 +7,7 @@ data class CreatePhraseLocale(
     val code: String,
     val branch: String? = null,
     val default: Boolean? = null,
-    val mail: Boolean? = null,
+    val main: Boolean? = null,
     val rtl: Boolean? = null,
     val sourceLocaleId: String? = null,
     val unverifyNewTranslations: String? = null,

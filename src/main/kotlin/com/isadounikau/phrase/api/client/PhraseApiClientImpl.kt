@@ -175,7 +175,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             locale.code,
             locale.branch,
             locale.default,
-            locale.mail,
+            locale.main,
             locale.rtl,
             locale.sourceLocaleId,
             locale.unverifyNewTranslations,
