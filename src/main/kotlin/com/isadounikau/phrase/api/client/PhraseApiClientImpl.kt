@@ -1,11 +1,5 @@
 package com.isadounikau.phrase.api.client
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.net.HttpHeaders
@@ -34,6 +28,10 @@ import feign.Request
 import feign.RequestInterceptor
 import feign.Response
 import feign.jackson.JacksonEncoder
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.parse
 import mu.KotlinLogging
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -51,7 +49,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
     private val client: PhraseApi
     private val responseCache: Cache<CacheKey, Any>
     private val eTagCache: Cache<CacheKey, String>
-    private val mapper: ObjectMapper
+    private val mapper: Json
 
     init {
         client = Feign.builder()
@@ -59,11 +57,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
             .encoder(JacksonEncoder())
             .target(PhraseApi::class.java, config.url)
 
-        mapper = ObjectMapper()
-            .registerModule(KotlinModule())
-            .registerModule(JavaTimeModule())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+        mapper = Json(JsonConfiguration.Stable)
 
         eTagCache = CacheBuilder.newBuilder().expireAfterWrite(config.responseCacheExpireAfterWrite).build()
         timer(name = "eTagCache",
@@ -295,7 +289,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
 
     override fun getETag(key: CacheKey): String? = eTagCache.getIfPresent(key)
 
-    private inline fun <reified T> processResponse(key: CacheKey, response: Response): T {
+    private inline fun <reified T: Any> processResponse(key: CacheKey, response: Response): T {
         log.debug { "Response : status [${response.status()}] \n headers [${response.headers()}]" }
 
         if (response.status() !in HS_OK..HS_BAD_REQUEST) {
@@ -333,7 +327,7 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         }
     }
 
-    private inline fun <reified T> processResponse(mediaType: MediaType, responseBody: Response.Body): T {
+    private inline fun <reified T: Any> processResponse(mediaType: MediaType, responseBody: Response.Body): T {
         val charset = mediaType.charset().or(StandardCharsets.UTF_8)
         return when (mediaType.withoutParameters()) {
             MediaType.JSON_UTF_8.withoutParameters() -> {
@@ -351,11 +345,13 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         }
     }
 
-    private inline fun <reified T> getObject(responseBody: Response.Body, charset: Charset): T {
+    @OptIn(ImplicitReflectionSerializer::class)
+    private inline fun <reified T: Any> getObject(responseBody: Response.Body, charset: Charset): T {
         try {
-            val responseObject = mapper.readValue<T>(responseBody.asReader(charset))
+            val s = responseBody.asReader(charset).readText()
+            val responseObject = mapper.parse<T>(s)
             log.debug { "Response object : $responseObject" }
-            return responseObject
+            return responseObject as T
         } catch (ex: Exception) {
             log.warn { ex.message }
             throw PhraseAppApiException("Error during parsing response", ex)

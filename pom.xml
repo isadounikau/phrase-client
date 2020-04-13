@@ -40,7 +40,8 @@
         <wiremock-jre8.version>2.26.3</wiremock-jre8.version>
         <slf4j.version>1.7.30</slf4j.version>
         <kotlin-logging.version>1.7.9</kotlin-logging.version>
-        <jackson-module.version>2.10.3</jackson-module.version>
+
+        <serialization.version>0.20.0</serialization.version>
     </properties>
 
     <scm>
@@ -60,19 +61,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-serialization-runtime</artifactId>
-            <version>0.11.0</version>
-        </dependency>
-
-        <!--Jackson-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
-            <version>${jackson-module.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson-module.version}</version>
+            <version>${serialization.version}</version>
         </dependency>
 
         <!--Feign-->
@@ -86,7 +75,6 @@
             <artifactId>feign-jackson</artifactId>
             <version>${feign.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>io.github.openfeign.form</groupId>
