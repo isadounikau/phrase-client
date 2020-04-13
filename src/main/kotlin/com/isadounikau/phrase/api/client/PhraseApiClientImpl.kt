@@ -33,6 +33,8 @@ import feign.Feign
 import feign.Request
 import feign.RequestInterceptor
 import feign.Response
+import feign.form.FormEncoder
+import feign.httpclient.ApacheHttpClient
 import feign.jackson.JacksonEncoder
 import mu.KotlinLogging
 import java.nio.charset.Charset
@@ -56,7 +58,8 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
     init {
         client = Feign.builder()
             .requestInterceptor(getInterceptor())
-            .encoder(JacksonEncoder())
+            .encoder(FormEncoder(JacksonEncoder()))
+            .client(ApacheHttpClient())
             .target(PhraseApi::class.java, config.url)
 
         mapper = ObjectMapper()
@@ -112,8 +115,6 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
     override fun deleteProject(projectId: String): Boolean {
         log.debug { "Delete project [$projectId]" }
         val response = client.deleteProject(projectId)
-        val key = CacheKey(Request.HttpMethod.DELETE, "/api/v2/projects/$projectId")
-        processResponse<Void>(key, response)
         return response.status() == HS_NO_CONTENT
     }
 
@@ -227,9 +228,10 @@ class PhraseApiClientImpl(private val config: PhraseApiClientConfig) : PhraseApi
         return (downloadLocale(projectId, localeId, FileFormat.JAVA_PROPERTY, properties) as ByteArrayResponse).response
     }
 
-    override fun deleteLocale(projectId: String, localeId: String, branch: String?) {
+    override fun deleteLocale(projectId: String, localeId: String, branch: String?): Boolean {
         log.debug { "Delete locale [$localeId] for [$branch] branch of project [$projectId]" }
-        client.deleteLocale(projectId, localeId, branch)
+        val response = client.deleteLocale(projectId, localeId, branch)
+        return response.status() == HS_NO_CONTENT
     }
 
     override fun translations(project: PhraseProject, locale: PhraseLocale, branch: String?): List<Translation> {

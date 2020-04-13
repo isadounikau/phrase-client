@@ -1,6 +1,8 @@
 package com.isadounikau.phrase.api.client
 
+import com.isadounikau.phrase.api.client.models.CreatePhraseProject
 import com.isadounikau.phrase.api.client.models.PhraseProject
+import com.isadounikau.phrase.api.client.models.UpdatePhraseProject
 import org.junit.Test
 import java.time.Instant
 import kotlin.test.assertEquals
@@ -8,6 +10,55 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
 class ProjectApiClientImplTest : AbstractTest() {
+
+    @Test
+    fun `create project when project not exist then return created project`() {
+        //GIVEN project
+        val createProject = CreatePhraseProject(
+            name = "name"
+        )
+        val excretedProject = PhraseProject(
+            id = "943e69b51641b00d6acbb638f62f4541",
+            name = "name",
+            sharesTranslationMemory = "false",
+            projectImageUrl = "lenna.png",
+            mainFormat = "",
+            createdAt = Instant.ofEpochSecond(1531919753),
+            updatedAt = Instant.ofEpochSecond(1585901452)
+        )
+
+        //WHEN
+        val actualProject = source.createProject(createProject)
+
+        //THEN
+        assertNotNull(actualProject)
+        assertEquals(excretedProject, actualProject)
+    }
+
+    @Test
+    fun `update project when project exist then return created project`() {
+        //GIVEN project
+        val projectId = "943e69b51641b00d6acbb638f62f4541"
+        val updateProject = UpdatePhraseProject(
+            name = "updated_name"
+        )
+        val excretedProject = PhraseProject(
+            id = projectId,
+            name = "updated_name",
+            sharesTranslationMemory = "false",
+            projectImageUrl = "lenna.png",
+            mainFormat = "",
+            createdAt = Instant.ofEpochSecond(1531919753),
+            updatedAt = Instant.ofEpochSecond(1585901452)
+        )
+
+        //WHEN
+        val actualProject = source.updateProject(projectId, updateProject)
+
+        //THEN
+        assertNotNull(actualProject)
+        assertEquals(excretedProject, actualProject)
+    }
 
     @Test
     fun `get projects when projects exist then return projects`() {

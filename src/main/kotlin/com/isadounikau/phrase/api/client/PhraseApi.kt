@@ -9,41 +9,36 @@ import feign.Response
 import java.io.File
 
 @Suppress("LongParameterList", "TooManyFunctions")
-@Headers(
-    "Content-Type: application/json"
-)
 interface PhraseApi {
 
     //Projects
     @RequestLine("GET /api/v2/projects")
+    @Headers("Content-Type: application/json")
     fun projects(): Response
 
     @RequestLine("GET /api/v2/projects/{projectId}")
+    @Headers("Content-Type: application/json")
     fun project(@Param("projectId") projectId: String): Response
 
     @RequestLine("POST /api/v2/projects")
-    @Headers(
-        "Content-Type: multipart/form-data"
-    )
+    @Headers("Content-Type: multipart/form-data; charset=UTF-8;")
     fun createProject(
         @Param("name") name: String,
         @Param("project_image") projectImage: File?,
         @Param("main_format") mainFormat: String?,
-        @Param("sharesTranslationMemory") sharesTranslationMemory: String?,
+        @Param("shares_translation_memory") sharesTranslationMemory: Boolean?,
         @Param("remove_project_image") removeProjectImage: Boolean?,
         @Param("account_id") accountId: String?
     ): Response
 
-    @RequestLine("PUT /api/v2/projects/{projectId}")
-    @Headers(
-        "Content-Type: multipart/form-data"
-    )
+    @RequestLine("PATCH /api/v2/projects/{projectId}")
+    @Headers("Content-Type: multipart/form-data")
     fun updateProject(
         @Param("projectId") projectId: String,
         @Param("name") name: String,
         @Param("project_image") projectImage: File?,
         @Param("main_format") mainFormat: String?,
-        @Param("sharesTranslationMemory") sharesTranslationMemory: String?,
+        @Param("shares_translation_memory") sharesTranslationMemory: Boolean?,
         @Param("remove_project_image") removeProjectImage: Boolean?,
         @Param("account_id") accountId: String?
     ): Response
@@ -53,10 +48,11 @@ interface PhraseApi {
 
     //Locales
     @RequestLine("GET /api/v2/projects/{projectId}/locales?branch={branch}")
-    fun locales(@Param("projectId") projectId: String,
-                @Param("branch") branch: String? = null): Response
+    @Headers("Content-Type: application/json")
+    fun locales(@Param("projectId") projectId: String, @Param("branch") branch: String? = null): Response
 
     @RequestLine("POST /api/v2/projects/{projectId}/locales")
+    @Headers("Content-Type: multipart/form-data")
     fun createLocale(
         @Param("projectId") projectId: String,
         @Param("name")  name: String,
@@ -72,6 +68,7 @@ interface PhraseApi {
     ): Response
 
     @RequestLine("PUT /api/v2/projects/{projectId}/locales/{localeId}")
+    @Headers("Content-Type: multipart/form-data")
     fun updateLocale(
         @Param("projectId") projectId: String,
         @Param("localeId") localeId: String,
@@ -88,6 +85,7 @@ interface PhraseApi {
     ): Response
 
     @RequestLine("GET /api/v2/projects/{projectId}/locales/{localeId}?branch={branch}")
+    @Headers("Content-Type: application/json")
     fun locale(
         @Param("projectId") projectId: String,
         @Param("localeId") localeId: String,
@@ -105,6 +103,7 @@ interface PhraseApi {
         "&format_options[escape_single_quotes]={escapeSingleQuotes}&branch={branch}" +
         "&fallback_locale_id={fallbackLocaleId}&include_empty_translations={includeEmptyTranslations}"
     )
+    @Headers("Content-Type: application/json")
     fun downloadLocale(
         @Param("projectId") projectId: String,
         @Param("localeId") localeId: String,
@@ -113,6 +112,7 @@ interface PhraseApi {
 
     //Translations
     @RequestLine("GET /api/v2/projects/{projectId}/locales/{localeId}/translations?branch={branch}")
+    @Headers("Content-Type: application/json")
     fun translations(
         @Param("projectId") projectId: String,
         @Param("localeId") localeId: String,
@@ -120,6 +120,7 @@ interface PhraseApi {
     ): Response
 
     @RequestLine("POST /api/v2/projects/{project_id}/translations")
+    @Headers("Content-Type: multipart/form-data")
     fun createTranslation(
         @Param("project_id") projectId: String,
         @Param("locale_id") localeId: String,
@@ -131,6 +132,7 @@ interface PhraseApi {
 
     //Keys
     @RequestLine("POST /api/v2/projects/{project_id}/keys")
+    @Headers("Content-Type: multipart/form-data")
     fun createKey(
         @Param("project_id") projectId: String,
         @Param("name") name: String,
@@ -151,6 +153,7 @@ interface PhraseApi {
     ): Response
 
     @RequestLine("POST /api/v2/projects/{project_id}/keys")
+    @Headers("Content-Type: multipart/form-data")
     fun createKey(
         @Param("project_id") projectId: String,
         @Param("name") name: String,
