@@ -8,6 +8,7 @@ import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class ProjectApiClientImplTest : AbstractTest() {
 
@@ -142,6 +143,7 @@ class ProjectApiClientImplTest : AbstractTest() {
         assertEquals(projectOne, projectTwo)
     }
 
+    @Test
     fun `get project when project not exist then throw exception`() {
         //GIVEN an api
         val projectId = "NOT_FOUND"
@@ -158,5 +160,18 @@ class ProjectApiClientImplTest : AbstractTest() {
             |  "documentation_url": "https://developers.phrase.com/api/"
             |}
             """.trimMargin(), ex.message)
+    }
+
+    @Test
+    fun `delete project when project exist then return true`() {
+        //GIVEN an api
+        val projectId = "943e69b51641b00d6acbb638f62f4541"
+
+        //WHEN
+        val result = source.deleteProject(projectId)
+
+        //THEN
+        assertNotNull(result)
+        assertTrue { result }
     }
 }

@@ -117,6 +117,20 @@
           "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
         }
       }
+    },
+    {
+      "request": {
+        "method": "DELETE",
+        "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541",
+        "headers": {
+          "authorization": {
+            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
+          }
+        }
+      },
+      "response": {
+        "status": 204
+      }
     }
   ]
 }
