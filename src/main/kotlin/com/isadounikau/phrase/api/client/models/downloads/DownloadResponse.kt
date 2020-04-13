@@ -21,13 +21,17 @@ data class ByteArrayResponse(
         other as ByteArrayResponse
 
         if (!response.contentEquals(other.response)) return false
+        if (charset != other.charset) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return response.contentHashCode()
+        var result = response.contentHashCode()
+        result = 31 * result + charset.hashCode()
+        return result
     }
+
 }
 
 typealias Messages = Map<String, Message>

@@ -4,6 +4,7 @@ import com.isadounikau.phrase.api.client.models.downloads.ByteArrayResponse
 import com.isadounikau.phrase.api.client.models.downloads.FileFormat
 import com.isadounikau.phrase.api.client.models.downloads.Message
 import org.junit.Test
+import java.nio.charset.StandardCharsets
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -44,16 +45,16 @@ class LocaleDownloadApiClientImplTest : AbstractTest() {
         //GIVEN project Id
         val projectId = "943e69b51641b00d6acbb638f62f4541"
         val localeId = "a4ca9b45e8721d6636be8e8ba40a90b3"
-        val fileContent = LocaleDownloadApiClientImplTest::class.java.getResource("/__files/locales/download/locales-translations.properties").readText()
+        val fileContent = LocaleDownloadApiClientImplTest::class.java.getResource("/__files/locales/download/locales-translations.properties").readBytes()
+        val expectedResult = ByteArrayResponse(fileContent, StandardCharsets.ISO_8859_1)
 
         //WHEN
-        val locales = source.downloadLocale(projectId, localeId, FileFormat.JAVA_PROPERTY) as ByteArrayResponse
-        val actualData = String(locales.response)
+        val actualResult = source.downloadLocale(projectId, localeId, FileFormat.JAVA_PROPERTY) as ByteArrayResponse
 
         //THEN
-        assertNotNull(locales)
-        assertNotNull(actualData)
-        assertEquals(fileContent, actualData)
+        assertNotNull(actualResult)
+        assertEquals(expectedResult.hashCode(), actualResult.hashCode())
+        assertEquals(expectedResult, actualResult)
     }
 
     @Test
