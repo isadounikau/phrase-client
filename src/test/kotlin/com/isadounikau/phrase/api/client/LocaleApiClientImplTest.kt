@@ -6,6 +6,7 @@ import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class LocaleApiClientImplTest : AbstractTest() {
 
@@ -28,7 +29,7 @@ class LocaleApiClientImplTest : AbstractTest() {
         val projectId = "943e69b51641b00d6acbb638f62f4541"
         val localeId = "a4ca9b45e8721d6636be8e8ba40a90b3"
         val expectedLocale = PhraseLocale(
-            id = "a4ca9b45e8721d6636be8e8ba40a90b3",
+            id = localeId,
             name = "de",
             code = "de-DE",
             default = true,
@@ -103,5 +104,19 @@ class LocaleApiClientImplTest : AbstractTest() {
             |  "documentation_url": "https://developers.phrase.com/api/"
             |}
             """.trimMargin(), ex.message)
+    }
+
+    @Test
+    fun `delete project locale when project locale exist then return true`() {
+        //GIVEN project id & locale id
+        val projectId = "943e69b51641b00d6acbb638f62f4541"
+        val localeId = "a4ca9b45e8721d6636be8e8ba40a90b3"
+
+        //WHEN
+        val result = source.deleteLocale(projectId, localeId)
+
+        //THEN
+        assertNotNull(result)
+        assertTrue { result }
     }
 }
