@@ -1,12 +1,13 @@
 package com.isadounikau.phrase.api.client
 
-import kotlinx.serialization.ImplicitReflectionSerializer
+import com.isadounikau.phrase.api.client.models.PhraseLocale
 import org.junit.Test
+import java.time.Instant
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
-@ImplicitReflectionSerializer
-class LocaleApiClientImplTest: AbstractTest() {
+class LocaleApiClientImplTest : AbstractTest() {
 
     @Test
     fun `get locales when projects exist then return locales`() {
@@ -26,12 +27,29 @@ class LocaleApiClientImplTest: AbstractTest() {
         //GIVEN project Id
         val projectId = "943e69b51641b00d6acbb638f62f4541"
         val localeId = "a4ca9b45e8721d6636be8e8ba40a90b3"
+        val expectedLocale = PhraseLocale(
+            id = "a4ca9b45e8721d6636be8e8ba40a90b3",
+            name = "de",
+            code = "de-DE",
+            default = true,
+            main = false,
+            rtl = false,
+            createdAt = Instant.ofEpochSecond(1422438773),
+            updatedAt = Instant.ofEpochSecond(1422438773)
+        )
 
         //WHEN
-        val locale = source.locale(projectId, localeId)
+        val actualLocale = source.locale(projectId, localeId)
 
         //THEN
-        assertNotNull(locale)
+        assertNotNull(actualLocale)
+        assertEquals(expectedLocale.id, actualLocale.id)
+        assertEquals(expectedLocale.name, actualLocale.name)
+        assertEquals(expectedLocale.code, actualLocale.code)
+        assertEquals(expectedLocale.default, actualLocale.default)
+        assertEquals(expectedLocale.main, actualLocale.main)
+        assertEquals(expectedLocale.rtl, actualLocale.rtl)
+        assertEquals(expectedLocale, actualLocale)
     }
 
     @Test
@@ -67,15 +85,23 @@ class LocaleApiClientImplTest: AbstractTest() {
         assertEquals(localeOne, localeTwo)
     }
 
-    @Test(expected = PhraseAppApiException::class)
+    @Test
     fun `get locale when locale not exist then throw exception`() {
         //GIVEN an api
         val projectId = "943e69b51641b00d6acbb638f62f4541"
         val localeId = "NOT_FOUND"
 
         //WHEN
-        source.locale(projectId, localeId)
+        val ex = assertFailsWith<PhraseAppApiException> { source.locale(projectId, localeId) }
 
         //THEN exception
+        assertNotNull(ex)
+        assertEquals(
+            """
+            |Code [404] : {
+            |  "message": "Not Found",
+            |  "documentation_url": "https://developers.phrase.com/api/"
+            |}
+            """.trimMargin(), ex.message)
     }
 }

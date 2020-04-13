@@ -1,7 +1,7 @@
-package com.isadounikau.phrase.api.client.model
+package com.isadounikau.phrase.api.client.models
 
 import java.io.File
-import java.util.Date
+import java.time.Instant
 
 data class PhraseProject(
     val id: String,
@@ -11,11 +11,9 @@ data class PhraseProject(
     val projectImageUrl: String? = null,
     val removeProjectImage: Boolean? = null,
     val accountId: String? = null,
-    val createdAt: Date? = null,
-    val updatedAt: Date? = null
+    val createdAt: Instant? = null,
+    val updatedAt: Instant? = null
 )
-
-typealias PhraseProjects = List<PhraseProject>
 
 data class CreatePhraseProject(
     val name: String,

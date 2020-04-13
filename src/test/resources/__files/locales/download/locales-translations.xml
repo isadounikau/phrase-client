@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="boolean_key">--- true
+    </string>
+    <string name="empty_string_translation"/>
+    <!-- This is the amazing description for this key! -->
+    <string name="key_with_description">Check it out! This key has a description! (At least in some formats)</string>
+    <string name="key_with_line-break">This translations contains
+        a line-break.</string>
+    <string name="nested.deeply.key">Wow, this key is nested even deeper.</string>
+    <string name="nested.key">This key is nested inside a namespace.</string>
+    <string name="null_translation"/>
+    <plurals name="pluralized_key">
+        <item quantity="one">Only one pluralization found.</item>
+        <item quantity="other">Wow, you have %s pluralizations!</item>
+        <item quantity="zero">You have no pluralization.</item>
+    </plurals>
+    <string-array name="sample_collection">
+        <item>first item</item>
+        <item>second item</item>
+        <item>third item</item>
+    </string-array>
+    <string name="simple_key">Just a simple key with a simple message.</string>
+    <string name="unverified_key">This translation is not yet verified and waits for it. (In some formats we also export this status)</string>
+</resources>

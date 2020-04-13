@@ -1,6 +1,4 @@
-package com.isadounikau.phrase.api.client.model
-
-class Translations: ArrayList<Translation>()
+package com.isadounikau.phrase.api.client.models
 
 data class Translation(
     val id: String,

@@ -1,12 +1,12 @@
 [![Build Status](https://travis-ci.com/isadounikau/phrase-client.svg?branch=master)](https://travis-ci.com/isadounikau/phrase-client)
 [![codecov](https://codecov.io/gh/isadounikau/phrase-client/branch/master/graph/badge.svg)](https://codecov.io/gh/isadounikau/phrase-client)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.isadounikau/phrase-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.isadounikau/phrase-client/badge.svg)
-# Phrase.com Api Client
-Java/Kotlin Phrase API client
+# Phrase.com Api Client with ETag caching support
+Java/Kotlin Phrase API client. Library supports **ETag caching**, therefore **you can forget about Rate Limiting** exceptions problem
 
 ## What is this?
 This projects contain client to handle the API from [PhraseApp API v2](http://docs.phraseapp.com/api/v2/).
-It's supposed to expose Phrase Core within the kotlin world.
+It's supposed to expose Phrase Core within the Java/Kotlin world.
 
 ## How to use it
 
@@ -32,6 +32,11 @@ val phraseApiClient = PhraseApiClientImpl(config)
   * Get locale by id
   * Delete locale
   * Download locale translations
+    * [JSON](https://phrase.com/docs/guides/formats/chrome-json/)
+    * [Java Proerties](https://phrase.com/docs/guides/formats/java-properties/)
+    * [Android XML](https://phrase.com/docs/guides/formats/android-xml/)
+    * [iOS Strings](https://phrase.com/docs/guides/formats/ios-localizable-strings/)
+    * [CSV](https://phrase.com/docs/guides/formats/csv/)
   
 * Translation
   * Create translation
@@ -41,3 +46,8 @@ val phraseApiClient = PhraseApiClientImpl(config)
   * Search key
   * Delete key
 
+## TODO
+* Increase test coverage
+* Increase supported APIs
+* Migrate from Maven to Gradle 
+* *Optional* introduce kotlin-multiplatform 

@@ -11,7 +11,7 @@ import kotlin.test.BeforeTest
 abstract class AbstractTest {
 
     private val wireMockServer: WireMockServer = WireMockServer()
-    protected lateinit var source: PhraseApiClientImpl
+    protected lateinit var source: PhraseApiClient
     private val token = UUID.fromString("2ed95762-34eb-4f26-bfee-306a42649264").toString()
 
     @BeforeTest
