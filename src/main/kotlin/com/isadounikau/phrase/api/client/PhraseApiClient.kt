@@ -45,7 +45,7 @@ interface PhraseApiClient {
         replaceWith = ReplaceWith("downloadLocale(projectId, localeId, FileFormat.JAVA_PROPERTY, properties)", "com.isadounikau.phrase.api.client.models.downloads.FileFormat"))
     fun downloadLocaleAsProperties(projectId: String, localeId: String, properties: DownloadPhraseLocaleProperties? = null): ByteArray
 
-    fun deleteLocale(projectId: String, localeId: String, branch: String? = null)
+    fun deleteLocale(projectId: String, localeId: String, branch: String? = null): Boolean
 
     fun translations(project: PhraseProject, locale: PhraseLocale, branch: String? = null): List<Translation>
 

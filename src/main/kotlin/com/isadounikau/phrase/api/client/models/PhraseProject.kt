@@ -18,7 +18,7 @@ data class PhraseProject(
 data class CreatePhraseProject(
     val name: String,
     val mainFormat: String? = null,
-    val sharesTranslationMemory: String? = null,
+    val sharesTranslationMemory: Boolean? = null,
     val projectImage: File? = null,
     val removeProjectImage: Boolean? = null,
     val accountId: String? = null
@@ -27,7 +27,7 @@ data class CreatePhraseProject(
 data class UpdatePhraseProject(
     val name: String,
     val mainFormat: String? = null,
-    val sharesTranslationMemory: String? = null,
+    val sharesTranslationMemory: Boolean? = null,
     val projectImage: File? = null,
     val removeProjectImage: Boolean? = null,
     val accountId: String? = null

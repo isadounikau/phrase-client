@@ -63,6 +63,60 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/api/v2/projects",
+        "headers": {
+          "authorization": {
+            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
+          }
+        },
+        "multipartPatterns" : [ {
+          "matchingType" : "ANY",
+          "headers" : {
+            "Content-Disposition" : {
+              "contains" : "name=\"name\""
+            }
+          }
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "projects/project.json",
+        "headers": {
+          "content-type": "application/json",
+          "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PATCH",
+        "url": "/api/v2/projects/943e69b51641b00d6acbb638f62f4541",
+        "headers": {
+          "authorization": {
+            "equalTo": "token 2ed95762-34eb-4f26-bfee-306a42649264"
+          }
+        },
+        "multipartPatterns" : [ {
+          "matchingType" : "ANY",
+          "headers" : {
+            "Content-Disposition" : {
+              "contains" : "name=\"name\""
+            }
+          }
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "projects/updated_project.json",
+        "headers": {
+          "content-type": "application/json",
+          "etag": "W/\"3c8960723aae798ea88438c389cd67b5\""
+        }
+      }
     }
   ]
 }
