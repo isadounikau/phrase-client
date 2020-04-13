@@ -1,14 +1,47 @@
 package com.isadounikau.phrase.api.client
 
+import com.isadounikau.phrase.api.client.models.CreatePhraseLocale
 import com.isadounikau.phrase.api.client.models.PhraseLocale
 import org.junit.Test
 import java.time.Instant
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class LocaleApiClientImplTest : AbstractTest() {
+
+    @Test
+    fun `create locale when locale not exist then return created locale`() {
+        //GIVEN project
+        val projectId = "943e69b51641b00d6acbb638f62f4541"
+       val localeId = "a4ca9b45e8721d6636be8e8ba40a90b3"
+        val createLocale = CreatePhraseLocale(
+            name = "locale_name",
+            code = Locale.GERMAN.toLanguageTag(),
+            default = true,
+            main = false,
+            rtl = false
+        )
+        val expectedLocale = PhraseLocale(
+            id = localeId,
+            name = "locale_name",
+            code = Locale.GERMANY.toLanguageTag(),
+            default = true,
+            main = false,
+            rtl = false,
+            createdAt = Instant.ofEpochSecond(1422438773),
+            updatedAt = Instant.ofEpochSecond(1422438773)
+        )
+
+        //WHEN
+        val actualProject = source.createLocale(projectId, createLocale)
+
+        //THEN
+        assertNotNull(actualProject)
+        assertEquals(expectedLocale, actualProject)
+    }
 
     @Test
     fun `get locales when projects exist then return locales`() {
@@ -30,8 +63,8 @@ class LocaleApiClientImplTest : AbstractTest() {
         val localeId = "a4ca9b45e8721d6636be8e8ba40a90b3"
         val expectedLocale = PhraseLocale(
             id = localeId,
-            name = "de",
-            code = "de-DE",
+            name = "locale_name",
+            code = Locale.GERMANY.toLanguageTag(),
             default = true,
             main = false,
             rtl = false,
