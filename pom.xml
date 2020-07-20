@@ -40,7 +40,7 @@
         <wiremock-jre8.version>2.26.3</wiremock-jre8.version>
         <slf4j.version>1.7.30</slf4j.version>
         <kotlin-logging.version>1.7.9</kotlin-logging.version>
-        <jackson-module.version>2.10.3</jackson-module.version>
+        <jackson-module.version>2.11.0</jackson-module.version>
     </properties>
 
     <scm>
