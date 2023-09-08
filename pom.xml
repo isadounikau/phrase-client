@@ -37,7 +37,7 @@
         <feign.version>10.9</feign.version>
         <feign-form.version>3.8.0</feign-form.version>
         <guava.version>29.0-jre</guava.version>
-        <wiremock-jre8.version>2.26.3</wiremock-jre8.version>
+        <wiremock-jre8.version>2.35.1</wiremock-jre8.version>
         <slf4j.version>1.7.30</slf4j.version>
         <kotlin-logging.version>1.7.9</kotlin-logging.version>
         <jackson-module.version>2.11.0</jackson-module.version>
